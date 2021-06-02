@@ -1,0 +1,14 @@
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: networks-simple-example
+  labels:
+    sfcn.cisco.com/service-role: default
+spec:
+  order: 3
+  description: "simple networks"
+  cliLines: |
+    object network no1
+     host 1.1.1.1
+    object network no2
+     host 1.1.1.2

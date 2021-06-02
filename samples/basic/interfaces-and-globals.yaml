@@ -1,0 +1,29 @@
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: interfaces-and-globals
+  labels:
+    sfcn.cisco.com/service-role: default
+spec:
+  order: 1
+  description: "DHCP interfaces and global overrides"
+  cliLines: |
+    interface Management0/0
+    nameif management
+    ip address dhcp
+    no shutdown
+
+    interface TenGigabitEthernet0/0
+    nameif outside
+    ip address dhcp
+    security-level 100
+    no shutdown
+
+    interface TenGigabitEthernet0/1
+    nameif inside
+    ip address dhcp
+    no shutdown
+
+    policy-map global_policy
+      class inspection_default
+        inspect icmp
