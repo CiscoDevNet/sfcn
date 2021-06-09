@@ -1,8 +1,10 @@
-apiVersion: kasa.cisco.com/v1
+apiVersion: cnfw.cisco.com/v1
 kind: ASAConfiguration
 metadata:
-  name: l2lconfig
+  name: s2svpn-config
   namespace: sfcn-system
+  labels:
+    sfcn.cisco.com/service-role: "default"
 spec:
   order: 3
   cliLines: |
