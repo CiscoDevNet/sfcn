@@ -1,0 +1,16 @@
+apiVersion: cnfw.cisco.com/v1
+kind: IPv4SubnetPool
+metadata:
+  name: ravpnpool
+  namespace: sfcn-system 
+  annotations:
+    # enables AWS Route Table integration for this pool
+    aws.kasa.cisco.com/type: "route-table"
+    # EP's node interface index that will be used as route target
+    aws.kasa.cisco.com/interface-index: "3"
+    # AWS Route Table ID that will be synced with assigned subnets 
+    aws.kasa.cisco.com/route-table-id: <your_route_table_id> 
+spec:
+  address: "10.10.0.0"
+  supernetPrefix: 16
+  subnetPrefix: 24

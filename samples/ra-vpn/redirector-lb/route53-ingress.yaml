@@ -1,0 +1,25 @@
+apiVersion: cnfw.cisco.com/v1
+kind: Route53Ingress
+metadata:
+  name: vpn-redirector
+  namespace: sfcn-system
+spec:
+  # Change to your Route53 hosted zone
+  hostedZone: Z056XXXXXXXXXXXXXE0EK
+  # Change to your VPN domain name
+  recordSetName: vpn.domain.com
+  recordUpdate: DOMAIN
+  endpointSelector:
+      serviceRole: vpn-redirector
+---
+apiVersion: cnfw.cisco.com/v1
+kind: Route53Ingress
+metadata:
+  name: vpn
+  namespace: sfcn-system
+spec:
+  # Change to your Route53 hosted zone
+  hostedZone: Z056XXXXXXXXXXXXXE0EK
+  # Change to your VPN domain name
+  recordSetName: vpn.domain.com
+  recordUpdate: SUBDOMAIN
