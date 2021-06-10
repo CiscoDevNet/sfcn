@@ -15,19 +15,19 @@ linear scalability and resiliency for security services and easy management of c
 * Granular control where you need it
 * Autoscaling and autohealing through Kubernetes orchestration
 * Supports REST APIs for advanced integrations and programmability
-* Resilient remote access with multitenant support  
+* Resilient remote access with multi-tenant support  
 
 ## Management
 
 Secure Firewall Cloud Native is managed by API or Cisco Defense Orchestrator (CDO). 
-* **CDO**  ó  Helps you reduce complexity by simplifying security and device management. CDO is a Software-as-a-Service (SaaS)ñbased manager that helps you consistently manage policies 
+* **CDO** Helps you reduce complexity by simplifying security and device management. CDO is a Software-as-a-Service (SaaS) based manager that helps you consistently manage policies 
 across your Cisco Secure Firewalls. It also saves you time by improving efficiency for repetitive security tasks. Whether you need to adjust security polices for 10 or 1000 firewalls, 
 Cisco Defense Orchestrator makes management easier than ever before.
 
 ## Support & Information  
 To learn more about Secure Firewall Cloud Native, visit [Cisco Secure Firewall Cloud Native](https://www.cisco.com/c/en/us/products/security/secure-firewall-cloud-native/index.html) 
 
-To view buying options and speak with a Cisco sales representative, [Go here](https://www.cisco.com/c/en/us/buy.html)
+To view buying options and speak with a Cisco sales representative, [go here](https://www.cisco.com/c/en/us/buy.html)
 
 ## Public Cloud Deployment  
 ### AWS  
@@ -39,7 +39,7 @@ Cisco provides three Quick Start CloudFormation templates to deploy the Secure F
 Amazon EKS. Quick Starts are automated reference deployments that help you model and set up your AWS
 resources so that you can spend less time creating and managing your resources and infrastructure.
 
-You create an account on AWS and search AWS Marketplace for: ìCisco Secure Firewall Cloud Nativeî.
+You create an account on AWS and search AWS Marketplace for: "Cisco Secure Firewall Cloud Native".
 
 **Documentation**  
 * Technical Documentation: [Cisco Secure Firewall Cloud Native Getting Started Guide](https://www.cisco.com/content/en/us/td/docs/security/secure-firewall/cloud-native/getting-started/secure-firewall-cloud-native-gsg.html)
