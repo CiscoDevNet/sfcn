@@ -1,4 +1,4 @@
-# Cisco Secure Firewall Clould Native  
+# Cisco Secure Firewall Cloud Native  
 
 ## Bringing cloud-native firewalling to dynamic application environments  
 
