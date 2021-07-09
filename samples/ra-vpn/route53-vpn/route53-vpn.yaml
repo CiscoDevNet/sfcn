@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: s3-auth-secret
+  name: s3filesecret
   namespace: sfcn-system
 type: Opaque
 data:
@@ -18,13 +18,13 @@ metadata:
 spec:
   fileName: anyconnect-linux64-4.9.05042-webdeploy-k9.pkg
   s3:
-   bucket: sfcn-s3-bucket
+   bucket: answami-s3
    region: us-east-1
    item: anyconnect-linux64-4.9.05042-webdeploy-k9.pkg
    auth:
-     secretName: s3-auth-secret
-     accessKeyField: access_key
-     secretKeyField: secret_key
+     secretName: "s3filesecret"
+     accessKeyField: "access_key"
+     secretKeyField: "secret_key"
 ---
 apiVersion: cnfw.cisco.com/v1
 kind: FileObject
@@ -34,13 +34,13 @@ metadata:
 spec:
   fileName: anyconnect-win-4.9.05042-webdeploy-k9.pkg
   s3:
-   bucket: sfcn-s3-bucket
+   bucket: answami-s3
    region: us-east-1
    item: anyconnect-win-4.9.05042-webdeploy-k9.pkg
    auth:
-     secretName: s3-auth-secret
-     accessKeyField: access_key
-     secretKeyField: secret_key
+     secretName: "s3filesecret"
+     accessKeyField: "access_key"
+     secretKeyField: "secret_key"
 ---
 apiVersion: cnfw.cisco.com/v1
 kind: FileObject
@@ -50,13 +50,13 @@ metadata:
 spec:
   fileName: anyconnect-macos-4.9.05042-webdeploy-k9.pkg
   s3:
-   bucket: sfcn-s3-bucket
+   bucket: answami-s3
    region: us-east-1
    item: anyconnect-macos-4.9.05042-webdeploy-k9.pkg
    auth:
-     secretName: s3-auth-secret
-     accessKeyField: access_key
-     secretKeyField: secret_key
+     secretName: "s3filesecret"
+     accessKeyField: "access_key"
+     secretKeyField: "secret_key"
 ---
 apiVersion: cnfw.cisco.com/v1
 kind: FileObject
@@ -66,13 +66,13 @@ metadata:
 spec:
   fileName: ravpn-profile.xml
   s3:
-   bucket: sfcn-s3-bucket
+   bucket: answami-s3
    region: us-east-1
    item: ravpn-profile.xml
    auth:
-     secretName: s3-auth-secret
-     accessKeyField: access_key
-     secretKeyField: secret_key
+     secretName: "s3filesecret"
+     accessKeyField: "access_key"
+     secretKeyField: "secret_key"
 ---
 apiVersion: v1
 kind: Secret
@@ -196,7 +196,6 @@ spec:
   hostedZone: Z056XXXXXXXXXXXXXE0EK
   # Change to your VPN domain name
   recordSetName: vpn.domain.com
-  recordUpdate: SUBDOMAIN
 ---
 apiVersion: v1
 kind: Secret
@@ -205,7 +204,7 @@ metadata:
   namespace: sfcn-system
 stringData:
   # RA VPN client details
-  username: jsmith 
+  username: answami
   password: cisco123
   privilege: "15"
 ---
@@ -221,7 +220,7 @@ metadata:
     aws.cnfw.cisco.com/interface-index: "3"
     # AWS Route Table ID that will be synced with assigned subnets.
     # This should be the table that includes your outside and inside networks, usually named "Public Subnets"
-    aws.cnfw.cisco.com/route-table-id: <your_route_table_id>
+    aws.cnfw.cisco.com/route-table-id: <your_public_route_table_id>
 spec:
   address: "10.10.0.0"
   supernetPrefix: 16
