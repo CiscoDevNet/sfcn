@@ -19,6 +19,7 @@ spec:
     - "mypkcs"
     - "redisca"
     - "userinfo"
+    - "sfcn-redis"
   cliLines: |
     interface Management0/0
      no management-only
@@ -78,6 +79,9 @@ spec:
     external-database
      host <your_redis_ip>
      port 6379
+      # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
+      # you should also omit the `db-password` line below.
+      db-password {{ index .secrets "sfcn-redis" "token" }}
      enable
     vpn load-balancing
      external-database
