@@ -10,7 +10,7 @@ spec:
   recordSetName: vpn.domain.com
   recordUpdate: DOMAIN
   endpointSelector:
-      serviceRole: vpn-redirector
+      serviceRole: vpnredirector
 ---
 apiVersion: cnfw.cisco.com/v1
 kind: Route53Ingress
