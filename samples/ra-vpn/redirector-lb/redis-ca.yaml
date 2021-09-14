@@ -1,3 +1,10 @@
+# This establishes trust between AWS Elasticache and your cluster. This cert
+# doesn't often change, so most of the time you can just apply this
+# secret directly. However, if you want to ensure you have an 
+# up-to-date cert you can issue the following command:
+# 
+# kubectl exec -it -n sfcn-system -c asac <enforcer-pod-name> -- bash -c "echo QUIT | openssl s_client -connect <redis-host-ip>:6379 -showcerts" 
+# The intermediate cert should be captured and applied into this secret value.
 apiVersion: v1
 kind: Secret
 metadata:
@@ -5,8 +12,6 @@ metadata:
   namespace: sfcn-system
 stringData:
   trustpoint: redisca
-  # Change to your redis issuer certificate.
-  # Use the following command: kubectl exec -it -n sfcn-system -c asac <enforcer-pod-name> -- bash -c "echo QUIT | openssl s_client -connect <redis-host-ip>:6379 -showcerts" 
   value: |
     MIIESTCCAzGgAwIBAgITBn+UV4WH6Kx33rJTMlu8mYtWDTANBgkqhkiG9w0BAQsF
     ADA5MQswCQYDVQQGEwJVUzEPMA0GA1UEChMGQW1hem9uMRkwFwYDVQQDExBBbWF6

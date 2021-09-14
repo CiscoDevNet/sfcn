@@ -22,35 +22,31 @@ spec:
     - "sfcn-redis"
   cliLines: |
     interface Management0/0
-     no management-only
-     nameif management
-     security-level 0
-     ip address dhcp
+      no management-only
+      nameif management
+      security-level 0
+      ip address dhcp
     interface TenGigabitEthernet0/0
-     nameif outside
-     security-level 0
-     ip address dhcp
+      nameif outside
+      security-level 0
+      ip address dhcp
     interface TenGigabitEthernet0/1
-     nameif inside
-     security-level 100
-     ip address dhcp
+      nameif inside
+      security-level 100
+      ip address dhcp
+    
     # Configure route to internet over outside interface
     route outside 0 0 {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }} 1
     # configure route to vpc addresses over inside interface
     route inside 10.37.0.0 255.255.0.0 {{ index .nodeLabels "sfcn.cisco.com.interface.3/gateway-ipv4" }} 2
-    # Add an explicit route to Redis server IP address over outside interface
-    route outside <your_redis_ip> 255.255.255.255 {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }}
-    # Add the following DNS configuration to have ASA contact R53 for DNS lookup
     dns domain-lookup outside
     dns server-group DefaultDNS
-    # published AWS DNS server
     name-server 169.254.169.253
+    
     # Configure the IP address pool from where the clients will receive an IP address
     ip local pool VPN_AC_pool {{.ipv4SubnetPools.ravpnpool.assignedRange}} mask 255.255.255.0
-    # Define access lists as required.
-    # access-list <ACL name> standard <permit/deny> <subnet> <netmask>
-    # access-list for optional split tunnel access to AWS VPC
     access-list Split_Tunnel_ACL extended permit ip 10.37.0.0 255.255.0.0 any4
+    
     webvpn
       enable outside
       anyconnect profiles my_AC_profile {{ .fileObjects.ravpnprofile.path }}
@@ -62,44 +58,41 @@ spec:
     group-policy VPN_group_policy internal
     group-policy VPN_group_policy attributes
       vpn-tunnel-protocol ssl-client
-      # Enable split tunnel if required.
-      # Example:
-      #split-tunnel-policy tunnelspecified
-      #split-tunnel-network-list value Split_Tunnel_ACL
       webvpn
         anyconnect profiles value my_AC_profile type user
     username {{ .secrets.userinfo.username }} password {{ .secrets.userinfo.password }} privilege {{ .secrets.userinfo.privilege }} 
     tunnel-group VPN_tunnel_group type remote-access
     tunnel-group VPN_tunnel_group general-attributes
-     address-pool VPN_AC_pool
-     default-group-policy VPN_group_policy
+      address-pool VPN_AC_pool
+      default-group-policy VPN_group_policy
     tunnel-group VPN_tunnel_group webvpn-attributes
-     group-alias VPN_tunnel_group enable
+      group-alias VPN_tunnel_group enable
+    
     # Configure Redis server IP and enable external database.
     external-database
-     host <your_redis_ip>
-     port 6379
+      host {{ index .secrets "sfcn-redis" "host" }}
+      port 6379
       # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
       # you should also omit the `db-password` line below.
       db-password {{ index .secrets "sfcn-redis" "token" }}
      enable
-    vpn load-balancing
-     external-database
+    
     # Any priority value other than 10 designates the ASAc
     # as a member.
-     priority 1
-     interface lbpublic outside
-    # We add the public IP of the "outside" interface for NAT command
-    # The interface indices for "management", "outside" and "inside" interfaces
-    # are 1, 2 and 3 respectively.
-     nat {{ index .nodeLabels "sfcn.cisco.com.interface.2/public-ip" }}
+    vpn load-balancing
+      external-database
+      priority 1
+      interface lbpublic outside
+      nat {{ index .nodeLabels "sfcn.cisco.com.interface.2/public-ip" }}
     vpn-sessiondb external-database
+    
     # Configure the Redis CA certificate
     crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
-     enrollment terminal
+      enrollment terminal
     crypto ca authenticate {{ .secrets.redisca.trustpoint }} nointeractive
     {{ .secrets.redisca.value }}
     quit
+
     # Import PKCS12 certificate for SSL connection
     crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
     {{ .secrets.mypkcs.value }}

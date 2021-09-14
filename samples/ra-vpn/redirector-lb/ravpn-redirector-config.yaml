@@ -27,14 +27,22 @@ spec:
       nameif management
       ip address dhcp
       no shutdown
-    hostname redirector
+    
+    # create a route to the internet over the outside interface
+    route outside 0 0 {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }}
+    # Add the following DNS configuration to have ASA contact R53 for DNS lookup
+    dns domain-lookup outside
+    dns server-group DefaultDNS
+    name-server 169.254.169.253
+    
     external-database
-      host <your_redis_ip>
+      host {{ index .secrets "sfcn-redis" "host" }}
       port 6379
       # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
       # you should also omit the `db-password` line below.
       db-password {{ index .secrets "sfcn-redis" "token" }}
       enable
+    
     vpn load-balancing
       external-database
       # A priority of 10 designates an ASAc as a redirector
@@ -42,22 +50,20 @@ spec:
       interface lbpublic outside
       # Set the following to enable FQDN based redirects. Redirects will be IPs otherwise
       redirect-fqdn enable
+    
     # Set the domain name used in your Route53Ingress; required for FQDN redirects and SSL connections.
     domain-name vpn.domain.com
-    # create a route to the internet over the outside interface
-    route outside 0 0 {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }}
-    # Add the following DNS configuration to have ASA contact R53 for DNS lookup
-    dns domain-lookup outside
-    dns server-group DefaultDNS
-    name-server 169.254.169.253
+
     webvpn
       enable outside
+    
     # Configure the Redis CA certificate
     crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
       enrollment terminal
     crypto ca authenticate {{ .secrets.redisca.trustpoint }} nointeractive
     {{ .secrets.redisca.value }}
     quit
+    
     # Import PKCS12 certificate for SSL connection
     crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
     {{ .secrets.mypkcs.value }}
