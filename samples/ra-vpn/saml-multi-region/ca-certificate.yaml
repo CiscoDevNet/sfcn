@@ -1,6 +1,6 @@
 # This certificate is provided by you. It is a PKCS12 formatted cert
 # generated on the domains used in your Route53Ingress config. 
-# For VPN Redirector topology, this should be a wildcard cert which 
+# For multi-region support, this should be a wildcard cert which 
 # covers the parent and subdomains used for VPN. 
 # 
 # Example: if using "domain.com" as the parent domain, with 

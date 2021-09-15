@@ -1,3 +1,5 @@
+# Route table IDs are VPC-specific, 
+# so we need one for each cluster
 apiVersion: cnfw.cisco.com/v1
 kind: IPv4SubnetPool
 metadata:
