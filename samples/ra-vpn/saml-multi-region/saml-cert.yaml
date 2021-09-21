@@ -9,6 +9,7 @@ metadata:
   namespace: sfcn-system
 stringData:
   trustpoint: samlpkcs
+  format: pkcs12
   value: |
     -----BEGIN CERTIFICATE-----
     MIIESTCCAzGgAwIBAgITBn+UV4WH6Kx33rJTMlu8mYtWDTANBgkqhkiG9w0BAQsF
