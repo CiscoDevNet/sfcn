@@ -19,9 +19,9 @@ spec:
   ipv4SubnetPools:
     - "ravpnpool"
   secrets:
-    - "sfcnredis"
+    - "sfcn-redis"
     - "mypkcs"
-    - "samlcert"
+    - "samlpkcs"
   cliLines: |
     interface Management0/0
       no management-only
@@ -56,11 +56,11 @@ spec:
       nat {{ index .nodeLabels "sfcn.cisco.com.interface.2/public-ip" }}
     vpn-sessiondb external-database
     external-database
-     host {{ .secrets.sfcnredis.host }}
+     host {{ index .secrets "sfcn-redis" "host" }}
      port 6379
       # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
       # you should also omit the `db-password` line below.
-      db-password {{ .secrets.sfcnredis.token }}
+      db-password {{ index .secrets "sfcn-redis" "token" }}
      enable
 
     webvpn
@@ -75,7 +75,7 @@ spec:
       url sign-out https://ciscovpn-dev.onelogin.com/trust/saml2/http-redirect/slo/xxxxxxx
       # The base URL should be the global domain that clients will connect to regardless of region
       base-url https://global.domain.com
-      trustpoint idp {{ .secrets.samlcert.trustpoint }}
+      trustpoint idp {{ .secrets.samlpkcs.trustpoint }}
       trustpoint sp {{ .secrets.mypkcs.trustpoint }}
       signature rsa-sha256
       force re-authentication

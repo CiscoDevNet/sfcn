@@ -12,7 +12,7 @@ spec:
   order: 1
   description: "RAVPN Redirector Configuration"
   secrets:
-    - "sfcnredis"
+    - "sfcn-redis"
   cliLines: |
     interface Management0/0
       no management-only
@@ -42,11 +42,11 @@ spec:
       nat {{ index .nodeLabels "sfcn.cisco.com.interface.2/public-ip" }}
     vpn-sessiondb external-database
     external-database
-     host {{ .secrets.sfcnredis.host }}
+     host {{ index .secrets "sfcn-redis" "host" }}
      port 6379
       # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
       # you should also omit the `db-password` line below.
-      db-password {{ .secrets.sfcnredis.token }}
+      db-password {{ index .secrets "sfcn-redis" "token" }}
      enable
     webvpn
       enable outside
@@ -66,7 +66,7 @@ spec:
   secrets:
     - "mypkcs"
     - "redisca"
-    - "samlcert"
+    - "samlpkcs"
   cliLines: |
     crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
       enrollment terminal
@@ -79,9 +79,9 @@ spec:
     quit
     ssl trust-point {{ .secrets.mypkcs.trustpoint }}
 
-    crypto ca trustpoint {{ .secrets.samlcert.trustpoint }}
+    crypto ca trustpoint {{ .secrets.samlpkcs.trustpoint }}
         enrollment terminal
         no ca-check
-    crypto ca authenticate {{ .secrets.samlcert.trustpoint }} nointeractive
-    {{ .secrets.samlcert.value }}
+    crypto ca authenticate {{ .secrets.samlpkcs.trustpoint }} nointeractive
+    {{ .secrets.samlpkcs.value }}
     quit

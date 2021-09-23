@@ -5,10 +5,11 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: samlcert
+  name: samlpkcs
   namespace: sfcn-system
 stringData:
-  trustpoint: samltp
+  trustpoint: samlpkcs
+  format: pkcs12
   value: |
     -----BEGIN CERTIFICATE-----
     MIIESTCCAzGgAwIBAgITBn+UV4WH6Kx33rJTMlu8mYtWDTANBgkqhkiG9w0BAQsF
