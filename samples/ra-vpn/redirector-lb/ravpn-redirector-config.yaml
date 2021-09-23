@@ -10,7 +10,7 @@ spec:
   secrets:
     - "mypkcs"
     - "redisca"
-    - "sfcn-redis"
+    - "sfcnredis"
   cliLines: |
     interface TenGigabitEthernet0/0
       nameif outside
@@ -36,11 +36,11 @@ spec:
     name-server 169.254.169.253
     
     external-database
-      host {{ index .secrets "sfcn-redis" "host" }}
+      host {{ .secrets.sfcnredis.host }}
       port 6379
       # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
       # you should also omit the `db-password` line below.
-      db-password {{ index .secrets "sfcn-redis" "token" }}
+      db-password {{ .secrets.sfcnredis.token }}
       enable
     
     vpn load-balancing

@@ -19,7 +19,7 @@ spec:
     - "mypkcs"
     - "redisca"
     - "userinfo"
-    - "sfcn-redis"
+    - "sfcnredis"
   cliLines: |
     interface Management0/0
       no management-only
@@ -70,11 +70,11 @@ spec:
     
     # Configure Redis server IP and enable external database.
     external-database
-      host {{ index .secrets "sfcn-redis" "host" }}
+      host {{ .secrets.sfcnredis.host }}
       port 6379
       # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
       # you should also omit the `db-password` line below.
-      db-password {{ index .secrets "sfcn-redis" "token" }}
+      db-password {{ .secrets.sfcnredis.token }}
      enable
     
     # Any priority value other than 10 designates the ASAc
