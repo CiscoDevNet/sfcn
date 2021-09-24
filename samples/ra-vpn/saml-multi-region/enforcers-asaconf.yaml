@@ -21,7 +21,7 @@ spec:
   secrets:
     - "sfcn-redis"
     - "mypkcs"
-    - "samlpkcs"
+    - "samlcert"
   cliLines: |
     interface Management0/0
       no management-only
@@ -75,7 +75,7 @@ spec:
       url sign-out https://ciscovpn-dev.onelogin.com/trust/saml2/http-redirect/slo/xxxxxxx
       # The base URL should be the global domain that clients will connect to regardless of region
       base-url https://global.domain.com
-      trustpoint idp {{ .secrets.samlpkcs.trustpoint }}
+      trustpoint idp {{ .secrets.samlcert.trustpoint }}
       trustpoint sp {{ .secrets.mypkcs.trustpoint }}
       signature rsa-sha256
       force re-authentication

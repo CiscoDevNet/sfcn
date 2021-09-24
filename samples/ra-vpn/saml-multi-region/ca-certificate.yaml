@@ -15,6 +15,7 @@ metadata:
 stringData:
   trustpoint: ssltp
   password: test
+  format: pkcs12
   value: |
     MIIS2gIBAzCCEqAGCSqGSIb3DQEHAaCCEpEEghKNMIISiTCCDQcGCSqGSIb3DQEH
     BqCCDPgwggz0AgEAMIIM7QYJKoZIhvcNAQcBMBwGCiqGSIb3DQEMAQYwDgQIh63X

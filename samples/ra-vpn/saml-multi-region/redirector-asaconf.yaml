@@ -66,7 +66,7 @@ spec:
   secrets:
     - "mypkcs"
     - "redisca"
-    - "samlpkcs"
+    - "samlcert"
   cliLines: |
     crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
       enrollment terminal
@@ -79,9 +79,9 @@ spec:
     quit
     ssl trust-point {{ .secrets.mypkcs.trustpoint }}
 
-    crypto ca trustpoint {{ .secrets.samlpkcs.trustpoint }}
+    crypto ca trustpoint {{ .secrets.samlcert.trustpoint }}
         enrollment terminal
         no ca-check
-    crypto ca authenticate {{ .secrets.samlpkcs.trustpoint }} nointeractive
-    {{ .secrets.samlpkcs.value }}
+    crypto ca authenticate {{ .secrets.samlcert.trustpoint }} nointeractive
+    {{ .secrets.samlcert.value }}
     quit
