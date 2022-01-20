@@ -1,0 +1,28 @@
+# This example shows an example of how to configure a separate group-url 
+# for a tunnel group in a multi-region cluster.
+# 
+# Note the two group-url entries: one for the global domain record, 
+# and one templated entry to resolve to the specific node FQDN which will terminate VPN.
+# Both are required when using SAML.
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  labels:
+    sfcn.cisco.com/service-role: default
+  name: us-consultants-tunnel-group
+  namespace: sfcn-system
+spec:
+  route53Ingresses:
+    - redirectorUS
+  order: 4
+  cliLines: |
+    tunnel-group consultants type remote-access
+    tunnel-group consultants general-attributes
+      address-pool VPN_POOL
+      default-group-policy VPN_group_policy
+    tunnel-group consultants webvpn-attributes
+      group-alias consultants enable
+      authentication saml
+      group-url https://global.domain.com enable
+      group-url https://{{ index .nodeLabels "sfcn.cisco.com.interface.2/public-ip" | replace "." "-" }}.{{ .route53Ingresses.redirectorUS.recordSetName }}/consultants enable
+      saml identity-provider https://app.onelogin.com/saml/metadata/xxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
