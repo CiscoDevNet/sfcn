@@ -97,4 +97,5 @@ spec:
     crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
     {{ .secrets.mypkcs.value }}
     quit
+    crypto ca permit-weak-crypto
     ssl trust-point {{ .secrets.mypkcs.trustpoint }}

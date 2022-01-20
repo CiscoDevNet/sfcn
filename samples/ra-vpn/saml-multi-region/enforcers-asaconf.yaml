@@ -1,6 +1,39 @@
-# This config is not region-specific, and can be applied to any of your clusters.
+# These configs are not region-specific, and can be applied to any of your clusters.
 # ASAConfigurations sensitive to region can be found in ./eu-region/ and ./us-region
-# respectively. 
+# respectively.
+
+# Configures the certs and trustpoints for SSL and Redis
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: ravpn-enforcer-certs
+  namespace: sfcn-system
+  labels:
+    sfcn.cisco.com/service-role: "default"
+spec:
+  order: 1
+  description: "RA-VPN Configuration"
+  secrets:
+    - "mypkcs"
+    - "redisca"
+    - "samlcert"
+  cliLines: |
+    crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
+      enrollment terminal
+    crypto ca authenticate {{ .secrets.redisca.trustpoint }} nointeractive
+    {{ .secrets.redisca.value }}
+    quit
+    crypto ca trustpoint {{ .secrets.samlcert.trustpoint }}
+      enrollment terminal
+      no ca-check
+    crypto ca authenticate {{ .secrets.samlcert.trustpoint }} nointeractive
+    {{ .secrets.samlcert.value }}
+    quit
+    crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
+    {{ .secrets.mypkcs.value }}
+    quit
+    ssl trust-point {{ .secrets.mypkcs.trustpoint }}
+---
 apiVersion: cnfw.cisco.com/v1
 kind: ASAConfiguration
 metadata:
@@ -9,7 +42,7 @@ metadata:
   labels:
     sfcn.cisco.com/service-role: "default"
 spec:
-  order: 1
+  order: 2
   description: "RA-VPN Configuration"
   fileObjects:
     - "ravpnprofile"
@@ -93,29 +126,5 @@ spec:
       group-alias VPN_tunnel_group enable
       authentication saml
       saml identity-provider https://app.onelogin.com/saml/metadata/xxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
-
 ---
-# Configures the certs and trustpoints for SSL and Redis
-apiVersion: cnfw.cisco.com/v1
-kind: ASAConfiguration
-metadata:
-  name: ravpn-enforcer-certs
-  namespace: sfcn-system
-  labels:
-    sfcn.cisco.com/service-role: "default"
-spec:
-  order: 2
-  description: "RA-VPN Configuration"
-  secrets:
-    - "mypkcs"
-    - "redisca"
-  cliLines: |
-    crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
-      enrollment terminal
-    crypto ca authenticate {{ .secrets.redisca.trustpoint }} nointeractive
-    {{ .secrets.redisca.value }}
-    quit
-    crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
-    {{ .secrets.mypkcs.value }}
-    quit
-    ssl trust-point {{ .secrets.mypkcs.trustpoint }}
+

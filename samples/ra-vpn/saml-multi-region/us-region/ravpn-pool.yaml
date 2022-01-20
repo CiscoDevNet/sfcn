@@ -13,6 +13,8 @@ metadata:
     # AWS Route Table ID that will be synced with assigned subnets.
     # This should be the table that includes your inside networks, usually named "Inside Subnets"
     aws.cnfw.cisco.com/route-table-id: <your_route_table_id>
+  labels:
+    sfcn.cisco.com/service-role: "default"
 spec:
   address: "10.10.0.0"
   supernetPrefix: 16

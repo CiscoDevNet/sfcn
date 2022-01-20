@@ -8,10 +8,10 @@ metadata:
     sfcn.cisco.com/service-role: default
   name: eu-enforcer-domain
   namespace: sfcn-system
-  spec:
-    order: 3
-    cliLines: |
-      domain-name eu.domain.com
+spec:
+  order: 3
+  cliLines: |
+    domain-name eu.domain.com
 ---
 # This configuration is region-specific and should match the domain
 # used in the corresponding Route53Ingress spec.
@@ -23,7 +23,7 @@ metadata:
     sfcn.cisco.com/service-role: vpnredirector
   name: eu-redirector-domain
   namespace: sfcn-system
-  spec:
-    order: 3
-    cliLines: |
-      domain-name eu.domain.com
+spec:
+  order: 3
+  cliLines: |
+    domain-name eu.domain.com

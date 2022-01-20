@@ -1,6 +1,34 @@
 # This config is not region-specific, and can be applied to any of your clusters.
 # ASAConfigurations sensitive to region can be found in ./eu-region/ and ./us-region
 # respectively. 
+# Configures the certs and trustpoints for SSL and Redis
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: redirector-certs
+  namespace: sfcn-system
+  labels:
+    sfcn.cisco.com/service-role: "vpnredirector"
+spec:
+  order: 1
+  description: "Certs and trustpoints for RAVPN Redirector service role"
+  secrets:
+    - "mypkcs"
+    - "redisca"
+    - "samlcert"
+  cliLines: |
+    crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
+      enrollment terminal
+    crypto ca authenticate {{ .secrets.redisca.trustpoint }} nointeractive
+    {{ .secrets.redisca.value }}
+    quit
+
+    crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
+    {{ .secrets.mypkcs.value }}
+    quit
+    ssl trust-point {{ .secrets.mypkcs.trustpoint }}
+
+---
 apiVersion: cnfw.cisco.com/v1
 kind: ASAConfiguration
 metadata:
@@ -9,7 +37,7 @@ metadata:
   labels:
     sfcn.cisco.com/service-role: "vpnredirector"
 spec:
-  order: 1
+  order: 2
   description: "RAVPN Redirector Configuration"
   secrets:
     - "sfcn-redis"
@@ -51,37 +79,3 @@ spec:
     webvpn
       enable outside
 
----
-# Configures the certs and trustpoints for SSL and Redis
-apiVersion: cnfw.cisco.com/v1
-kind: ASAConfiguration
-metadata:
-  name: redirector-certs
-  namespace: sfcn-system
-  labels:
-    sfcn.cisco.com/service-role: "vpnredirector"
-spec:
-  order: 2
-  description: "Certs and trustpoints for RAVPN Redirector service role"
-  secrets:
-    - "mypkcs"
-    - "redisca"
-    - "samlcert"
-  cliLines: |
-    crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
-      enrollment terminal
-    crypto ca authenticate {{ .secrets.redisca.trustpoint }} nointeractive
-    {{ .secrets.redisca.value }}
-    quit
-
-    crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
-    {{ .secrets.mypkcs.value }}
-    quit
-    ssl trust-point {{ .secrets.mypkcs.trustpoint }}
-
-    crypto ca trustpoint {{ .secrets.samlcert.trustpoint }}
-        enrollment terminal
-        no ca-check
-    crypto ca authenticate {{ .secrets.samlcert.trustpoint }} nointeractive
-    {{ .secrets.samlcert.value }}
-    quit
