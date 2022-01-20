@@ -10,9 +10,11 @@ metadata:
   name: us-enforcer-domain
   namespace: sfcn-system
 spec:
+  route53Ingresses:
+    - enforcersUS
   order: 3
   cliLines: |
-    domain-name us.domain.com
+    domain-name {{ .route53Ingresses.enforcersUS.recordSetName }}
 ---
 # This configuration is region-specific and should match the domain
 # used in the corresponding Route53Ingress spec.
@@ -25,6 +27,8 @@ metadata:
   name: us-redirector-domain
   namespace: sfcn-system
 spec:
+  route53Ingresses:
+    - redirectorUS
   order: 3
   cliLines: |
-    domain-name us.domain.com
+    domain-name {{ .route53Ingresses.redirectorUS.recordSetName }}

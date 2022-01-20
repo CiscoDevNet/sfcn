@@ -1,7 +1,7 @@
 apiVersion: cnfw.cisco.com/v1
 kind: Route53Ingress
 metadata:
-  name: europe-redirector
+  name: redirectorEU
   namespace: sfcn-system
 spec:
   # Change to your Route53 hosted zone
@@ -15,7 +15,7 @@ spec:
 apiVersion: cnfw.cisco.com/v1
 kind: Route53Ingress
 metadata:
-  name: europe-enforcers
+  name: enforcersEU
   namespace: sfcn-system
 spec:
   # Change to your Route53 hosted zone

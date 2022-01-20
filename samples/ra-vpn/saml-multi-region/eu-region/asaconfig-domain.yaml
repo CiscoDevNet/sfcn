@@ -9,9 +9,11 @@ metadata:
   name: eu-enforcer-domain
   namespace: sfcn-system
 spec:
+  route53Ingresses:
+    - redirectorEU
   order: 3
   cliLines: |
-    domain-name eu.domain.com
+    domain-name {{ .route53Ingresses.redirectorEU.recordSetName }}
 ---
 # This configuration is region-specific and should match the domain
 # used in the corresponding Route53Ingress spec.
@@ -24,6 +26,8 @@ metadata:
   name: eu-redirector-domain
   namespace: sfcn-system
 spec:
+  route53Ingresses:
+    - redirectorEU
   order: 3
   cliLines: |
-    domain-name eu.domain.com
+    domain-name {{ .route53Ingresses.redirectorEU.recordSetName }}
