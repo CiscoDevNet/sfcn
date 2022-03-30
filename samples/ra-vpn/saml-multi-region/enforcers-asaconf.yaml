@@ -89,12 +89,12 @@ spec:
       nat {{ index .nodeLabels "sfcn.cisco.com.interface.2/public-ip" }}
     vpn-sessiondb external-database
     external-database
-     host {{ index .secrets "sfcn-redis" "host" }}
-     port 6379
+      host {{ index .secrets "sfcn-redis" "host" }}
+      port {{ index .secrets "sfcn-redis" "port" }}
       # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
       # you should also omit the `db-password` line below.
       db-password {{ index .secrets "sfcn-redis" "token" }}
-     enable
+      enable
 
     webvpn
       enable outside
