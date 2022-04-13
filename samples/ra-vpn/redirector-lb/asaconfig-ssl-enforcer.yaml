@@ -1,0 +1,102 @@
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: ravpn-enforcer-config
+  namespace: sfcn-system
+  labels:
+    sfcn.cisco.com/service-role: "default"
+spec:
+  order: 1
+  description: "RA-VPN Configuration"
+  fileObjects:
+    - "ravpnprofile"
+    - "anyconnectlinux"
+    - "anyconnectwin"
+    - "anyconnectmac"
+  ipv4SubnetPools:
+    - "ravpnpool"
+  secrets:
+    - "mypkcs"
+    - "redisca"
+    - "userinfo"
+    - "sfcn-redis"
+  cliLines: |
+    interface Management0/0
+      no management-only
+      nameif management
+      security-level 0
+      ip address dhcp
+    interface TenGigabitEthernet0/0
+      nameif outside
+      security-level 0
+      ip address dhcp
+    interface TenGigabitEthernet0/1
+      nameif inside
+      security-level 100
+      ip address dhcp
+    
+    # Configure route to internet over outside interface
+    route outside 0 0 {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }} 1
+    # configure route to vpc addresses over inside interface
+    route inside 10.37.0.0 255.255.0.0 {{ index .nodeLabels "sfcn.cisco.com.interface.3/gateway-ipv4" }} 2
+    dns domain-lookup outside
+    dns server-group DefaultDNS
+    name-server 169.254.169.253
+    
+    # Configure the IP address pool from where the clients will receive an IP address
+    ip local pool VPN_AC_pool {{.ipv4SubnetPools.ravpnpool.assignedRange}} mask 255.255.255.0
+    access-list Split_Tunnel_ACL extended permit ip 10.37.0.0 255.255.0.0 any4
+    
+    webvpn
+      enable outside
+      anyconnect profiles my_AC_profile {{ .fileObjects.ravpnprofile.path }}
+      anyconnect image {{ .fileObjects.anyconnectwin.path }} 1
+      anyconnect image {{ .fileObjects.anyconnectmac.path }} 2
+      anyconnect image {{ .fileObjects.anyconnectlinux.path }} 3
+      anyconnect enable
+      tunnel-group-list enable
+    group-policy VPN_group_policy internal
+    group-policy VPN_group_policy attributes
+      vpn-tunnel-protocol ssl-client
+      webvpn
+        anyconnect profiles value my_AC_profile type user
+    username {{ .secrets.userinfo.username }} password {{ .secrets.userinfo.password }} privilege {{ .secrets.userinfo.privilege }} 
+    tunnel-group VPN_tunnel_group type remote-access
+    tunnel-group VPN_tunnel_group general-attributes
+      address-pool VPN_AC_pool
+      default-group-policy VPN_group_policy
+    tunnel-group VPN_tunnel_group webvpn-attributes
+      group-alias VPN_tunnel_group enable
+    
+    # Configure Redis server IP and enable external database.
+    external-database
+      host {{ index .secrets "sfcn-redis" "host" }}
+      port 6379
+      # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
+      # you should also omit the `db-password` line below.
+      db-password {{ index .secrets "sfcn-redis" "token" }}
+     enable
+    
+    # Any priority value other than 10 designates the ASAc
+    # as a member.
+    vpn load-balancing
+      external-database
+      redirect-fqdn enable
+      priority 1
+      interface lbpublic outside
+      nat {{ index .nodeLabels "sfcn.cisco.com.interface.2/public-ip" }}
+    vpn-sessiondb external-database
+    
+    # Configure the Redis CA certificate
+    crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
+      enrollment terminal
+    crypto ca authenticate {{ .secrets.redisca.trustpoint }} nointeractive
+    {{ .secrets.redisca.value }}
+    quit
+
+    # Import PKCS12 certificate for SSL connection
+    crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
+    {{ .secrets.mypkcs.value }}
+    quit
+    crypto ca permit-weak-crypto
+    ssl trust-point {{ .secrets.mypkcs.trustpoint }}
