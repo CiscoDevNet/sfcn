@@ -37,7 +37,7 @@ spec:
     
     external-database
       host {{ index .secrets "sfcn-redis" "host" }}
-      port 6379
+      port {{ index .secrets "sfcn-redis" "port" }}
       # this should match the token used for elasticache creation (EnforcerCacheAuthToken). If you omitted that field, then
       # you should also omit the `db-password` line below.
       db-password {{ index .secrets "sfcn-redis" "token" }}
