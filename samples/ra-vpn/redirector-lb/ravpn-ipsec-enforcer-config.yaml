@@ -1,13 +1,13 @@
 apiVersion: cnfw.cisco.com/v1
 kind: ASAConfiguration
 metadata:
-  name: ravpn-enforcer-config
+  name: ravpn-ipsec-enforcer-config
   namespace: sfcn-system
   labels:
     sfcn.cisco.com/service-role: "default"
 spec:
   order: 1
-  description: "RA-VPN Configuration"
+  description: "RA-VPN IPSec Configuration"
   fileObjects:
     - "ravpnprofile"
     - "anyconnectlinux"
@@ -57,7 +57,7 @@ spec:
       tunnel-group-list enable
     group-policy VPN_group_policy internal
     group-policy VPN_group_policy attributes
-      vpn-tunnel-protocol ssl-client
+      vpn-tunnel-protocol ssl-client ikev2
       webvpn
         anyconnect profiles value my_AC_profile type user
     username {{ .secrets.userinfo.username }} password {{ .secrets.userinfo.password }} privilege {{ .secrets.userinfo.privilege }} 
@@ -100,3 +100,24 @@ spec:
     quit
     crypto ca permit-weak-crypto
     ssl trust-point {{ .secrets.mypkcs.trustpoint }}
+
+    # IKev2-IPSec configuration
+    # Cryptographic parameters can be adjusted as necessary
+    crypto ikev2 policy 10
+     encryption aes-256 aes-192 aes
+     integrity sha256
+     group 21 20 19 16 15 14
+     prf sha512 sha384 sha256 sha
+     lifetime seconds 900
+    crypto ikev2 enable outside client-services port 443
+    crypto ikev2 remote-access trustpoint {{ .secrets.mypkcs.trustpoint }}
+    crypto ipsec security-association lifetime seconds 600
+
+    crypto ipsec ikev2 ipsec-proposal CSM_TS2_2
+     protocol esp encryption aes-gcm-256 aes-gcm-192 aes-gcm
+     protocol esp integrity null
+    crypto ipsec security-association pmtu-aging infinite
+    crypto dynamic-map CSM_int0_map_dynamic 30001 set ikev2 ipsec-proposal CSM_TS2_2
+    crypto map CSM_int0_map 30000 ipsec-isakmp dynamic CSM_int0_map_dynamic
+    crypto map CSM_int0_map interface outside 
+
