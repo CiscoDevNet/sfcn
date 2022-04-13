@@ -6,7 +6,7 @@ metadata:
   labels:
     sfcn.cisco.com/service-role: "vpnredirector"
 spec:
-  order: 2
+  order: 1
   secrets:
     - "mypkcs"
     - "redisca"
@@ -69,8 +69,3 @@ spec:
     {{ .secrets.mypkcs.value }}
     quit
     ssl trust-point {{ .secrets.mypkcs.trustpoint }}
-
-    # IKEv2-IPSec configuration
-    crypto ikev2 enable outside client-services port 443
-    crypto ikev2 remote-access trustpoint {{ .secrets.mypkcs.trustpoint }}
-    crypto ikev2 redirect during-init
