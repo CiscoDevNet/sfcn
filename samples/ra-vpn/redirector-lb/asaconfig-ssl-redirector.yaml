@@ -7,6 +7,8 @@ metadata:
     sfcn.cisco.com/service-role: "vpnredirector"
 spec:
   order: 1
+  route53Ingresses:
+    - "vpn"
   secrets:
     - "mypkcs"
     - "redisca"
@@ -51,8 +53,8 @@ spec:
       # Set the following to enable FQDN based redirects. Redirects will be IPs otherwise
       redirect-fqdn enable
     
-    # Set the domain name used in your Route53Ingress; required for FQDN redirects and SSL connections.
-    domain-name vpn.domain.com
+    # dynamically import the Route53 DNS record you configured in route53-ingress.yaml
+    domain-name {{ .route53Ingresses.vpn.recordSetName }}
 
     webvpn
       enable outside

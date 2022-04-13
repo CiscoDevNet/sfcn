@@ -15,6 +15,8 @@ spec:
     - "anyconnectmac"
   ipv4SubnetPools:
     - "ravpnpool"
+  route53Ingresses:
+    - "vpn"  
   secrets:
     - "mypkcs"
     - "redisca"
@@ -77,8 +79,10 @@ spec:
       db-password {{ index .secrets "sfcn-redis" "token" }}
      enable
     
-    # Any priority value other than 10 designates the ASAc
-    # as a member.
+    # dynamically import the Route53 DNS record you configured in route53-ingress.yaml
+    domain-name {{ .route53Ingresses.vpn.recordSetName }}
+
+    # Any priority value other than 10 designates the ASAc as a member.
     vpn load-balancing
       external-database
       redirect-fqdn enable
