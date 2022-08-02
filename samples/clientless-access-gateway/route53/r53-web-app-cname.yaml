@@ -1,0 +1,15 @@
+apiVersion: cnfw.cisco.com/v1
+kind: Route53Ingress
+metadata:
+  name: cag-webapp
+  namespace: sfcn-system
+spec:
+  # Change it to your hosted zone
+  hostedZone: Z00XXXXXXXXXXXXXX55
+  # Change it to your app domain name
+  recordSetName: <your-webapp-external-hostname>
+  recordType: CNAME
+  recordUpdate: DOMAIN
+  serviceSelector:
+    matchLabels:
+      app.kubernetes.io/name: cagportal

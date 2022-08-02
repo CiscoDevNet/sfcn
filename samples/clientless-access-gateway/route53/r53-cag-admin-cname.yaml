@@ -1,0 +1,15 @@
+eapiVersion: cnfw.cisco.com/v1
+kind: Route53Ingress
+metadata:
+  name: cag-admin
+  namespace: sfcn-system
+spec:
+  # Change it to your hosted zone
+  hostedZone: Z00XXXXXXXXXXXXXX55
+  # Change it to your CAG admin domain name
+  recordSetName: <your-cag-admin-hostname>
+  recordType: CNAME
+  recordUpdate: DOMAIN
+  serviceSelector:
+    matchLabels:
+      app.kubernetes.io/name: cagportal

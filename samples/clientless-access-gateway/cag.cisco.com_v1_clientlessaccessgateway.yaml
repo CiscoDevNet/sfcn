@@ -1,0 +1,30 @@
+apiVersion: cag.cisco.com/v1
+kind: ClientlessAccessGateway
+metadata:
+  name: clientlessaccessgateway-sample
+spec:
+  adminEmail: <your-cag-admin-email>
+  hostname: <your-cag-admin-hostname>
+  sslCert:
+    key:
+      valueFrom:
+        secretKeyRef:
+          name: sfcn-cag-cert
+          key: externalKey
+    cert:
+      valueFrom:
+        secretKeyRef:
+          name: sfcn-cag-cert
+          key: externalCert
+  primaryAuth:
+    entityId: "<your-IDP-EntityID-URL>"
+    signingCert:
+      valueFrom:
+        secretKeyRef:
+          name: idp-cert
+          key: signingCert
+    singleSignonUrl: "<your-IDP-single-login-URL>"
+    # optional fields
+    singleLogoutUrl: "<your-IDP-single-logout-URL>"
+    enforcedEmailDomain: "<your-enforced-email-domain>"
+    usernameAttribute: "User.Username"

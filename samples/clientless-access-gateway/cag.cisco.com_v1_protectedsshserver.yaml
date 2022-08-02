@@ -1,0 +1,38 @@
+apiVersion: cag.cisco.com/v1
+kind: ProtectedSSHServer
+metadata:
+  name: protectedsshserver-sample
+spec:
+  external:
+    hostname:
+      value: <your-ssh-app-external-hostname>
+    sslCert:
+      key:
+        valueFrom:
+          secretKeyRef:
+            name: sfcn-cag-cert
+            key: externalKey
+      cert:
+        valueFrom:
+          secretKeyRef:
+            name: sfcn-cag-cert
+            key: externalCert
+    sessionDuration: "960s"
+  internal:
+    - hostname: "<your-ssh-app-internal-ip>/24"
+      ports:
+        - '22'
+        - '23-30'
+    - hostname: "directory.svc.cluster.local"
+      ports:
+        - '24'
+        - '23-30'
+  duo2fa:
+    integrationKey: <your-duo-portal-ssh-app-integration-key>
+    apiHostname: <your-duo-portal-ssh-app-api-hostname>
+    secretKey:
+      valueFrom:
+        secretKeyRef:
+          name: sshapp-secret
+          key: apiSecret
+    enableFrameless: false
