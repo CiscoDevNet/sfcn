@@ -1,0 +1,58 @@
+apiVersion: cag.cisco.com/v1
+kind: ProtectedWebApplication
+metadata:
+  name: protectedwebapplication-sample
+spec:
+  external:
+    hostname:
+      value: <your-webapp-external-hostname>
+    sslCert:
+      key:
+        valueFrom:
+          secretKeyRef:
+            name: sfcn-cag-cert
+            key: externalKey
+      cert:
+        valueFrom:
+          secretKeyRef:
+            name: sfcn-cag-cert
+            key: externalCert
+    # optional fields
+    allowlistPrefixes:
+      - "/"
+      - "/public"
+      - "/robots.txt"
+      - "/All%20Documents"
+    allowlistSuffixes:
+      - ".jpg"
+      - ".png"
+    allowlistIps:
+      - "10.0.0.8"
+      - "192.168.1.0/24"
+      - "20.0.10.2-20.0.10.50"
+    sessionDuration: "960m"
+  internal:
+    hostname: "directory.svc.cluster.local"
+    useSsl: false
+    port: 443
+    trustedCert:
+      valueFrom:
+        secretKeyRef:
+          name: sfcn-cag-cert
+          key: externalCert
+    # optional fields
+    useInternalNameForHostHeader: true
+    useInternalNameForSni: true
+    addXForwardedHost: true
+    addXForwardedProto: true
+    upstreamResponseTimeout: 180
+    clientMaxBodySize: 128
+  duo2fa:
+    integrationKey: <your-duo-portal-webapp-integration-key>
+    apiHostname: <your-duo-portal-webapp-api-hostname>
+    secretKey:
+      valueFrom:
+        secretKeyRef:
+          name: webapp-secret
+          key: apiSecret
+    enableFrameless: false
