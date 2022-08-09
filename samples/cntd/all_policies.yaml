@@ -109,69 +109,6 @@ spec:
     HTTP_PORTS: "10000,10080,10100,10250,10255,10297,10443,11371,1158,1194,1212,1220,12601,1270,13014,1414,1422,14592,1533,15489,15672,1581,16000,16992,16993,16994,16995,17000,1719,1720,1741,1801,18081,1812,1830,1942,19980,2231,2301,23472,2375,2381,2484,2578,2809,2869,2980,29991,3000,30007,30018,3029,3037,3057,30888,311,3128,33300,34412,3443,34443,34444,3507,36,36099,3702,383,4000,40007,41080,4343,443,44449,4592,4848,49152,49153,5000,50000,50002,50452,5054,5060,5061,5117,51423,5222,5250,53331,5416,5443,54444,5450,5480,55252,555,5555,55555,5600,5601,56712,5814,5894,591,593,5984,5985,5986,6080,6173,623,631,664,666,6767,6988,7000,7001,7005,7070,7071,7080,7144,7145,7180,7181,7510,7770,7777,7778,7779,80,8000,8001,8008,801,8014,8015,8020,8028,8040,8060,808,8080,8081,8082,8085,8088,8090,8095,81,8118,8123,8161,818,8180,8181,8182,82,8222,8243,8280,83,8300,8333,8344,8393,84,8400,8443,8484,85,8500,8509,86,8694,87,8787,88,8800,8852,8880,8888,8899,89,8983,90,9000,9001,9002,901,9050,9060,9080,9090,9091,9111,9200,9201,9290,9443,9447,9700,9710,972,9788,9830,9850,9999"
     FTP_PORTS: "21,2100,3535"
 ---
-# Before an intrusion policy examines a 
-# packet, the packet is preprocessed according to configurations in a 
-# network analysis policy.
-
-apiVersion: cntd.cisco.com/v1
-kind: NetworkAnalysisPolicy
-metadata:
-  name: my-nap-policy
-  namespace: sfcn-system
-spec:
-  type:  "balanced-ips-NAP"
-  mode: "Inline"
-  config:
-    binder:
-      enabled: false
-      type: "binder"
-      rules:
-        - when:
-            service: "ftp"
-          use:
-            type: "ftp_client"
-    ftpclient:
-      enabled: true
-      instances:
-        - name: "ftp_client"
-          data: "{\r\n\t\"max_resp_len\": 9,\r\n\t\"bounce\": true,\r\n\t\"ignore_telnet_erase_cmds\": true,\r\n\t\"telnet_cmds\": true,\r\n\t\"bounce_to\": [{\r\n\t\t\t\"address\": \"192.168.1.1/24\",\r\n\t\t\t\"port\": 20021,\r\n\t\t\t\"last_port\": 20023\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"address\": \"192.168.1.2/32\",\r\n\t\t\t\"port\": 20031,\r\n\t\t\t\"last_port\": 20041\r\n\t\t}\r\n\t]\r\n}"
-    stream_tcp:
-      enabled: true
-      data:  "{\r\n\t\"flush_factor\": 0,\r\n\t\"max_window\": 0,\r\n\t\"overlap_limit\": 0,\r\n\t\"max_pdu\": 16384,\r\n\t\"no_ack\": false,\r\n\t\"policy\": \"bsd\",\r\n\t\"reassemble_async\": true,\r\n\t\"require_3whs\": -1,\r\n\t\"show_rebuilt_packets\": false,\r\n\t\"session_timeout\": 30,\r\n\t\"track_only\": false\r\n}"
-    normalizer:
-      enabled: true
-      data: "{\r\n\t\"ip4\": {},\r\n\t\"tcp\": {\r\n\t\t\"base\": false,\r\n\t\t\"block\": false,\r\n\t\t\"urp\": false,\r\n\t\t\"ips\": true,\r\n\t\t\"pad\": false,\r\n\t\t\"trim_syn\": false,\r\n\t\t\"trim_rst\": false,\r\n\t\t\"trim_win\": false,\r\n\t\t\"trim_mss\": false,\r\n\t\t\"opts\": false,\r\n\t\t\"req_urg\": false,\r\n\t\t\"req_pay\": false,\r\n\t\t\"rsv\": false,\r\n\t\t\"req_urp\": false,\r\n\t\t\"ecn\": \"off | packet | stream\",\r\n\t\t\"allow_names\": \"sack | echo | partial_order | conn_count | alt_checksum | md5\"\r\n\t}\r\n}"
----
-apiVersion: cntd.cisco.com/v1
-kind: NetworkAnalysisPolicy
-metadata:
-  name: my-nap-policy2
-  namespace: sfcn-system
-spec:
-  type:  "balanced-ips-NAP"
-  mode: "Inline"
-  config:
-    binder:
-      enabled: false
-      type: "binder"
-      rules:
-        - when:
-            service: "ftp"
-          use:
-            type: "ftp_client"
-            name: "my_home_ftp_client"
-    ftpclient:
-      enabled: true
-      instances:
-        - name: "my_home_ftp_client"
-          data: "{\"max_resp_len\": 10,\"bounce\": true,\"ignore_telnet_erase_cmds\": false}"
-    stream_tcp:
-      enabled: true
-      data:  "{\r\n\t\"flush_factor\": 0,\r\n\t\"max_window\": 0,\r\n\t\"overlap_limit\": 0,\r\n\t\"max_pdu\": 16384,\r\n\t\"no_ack\": false,\r\n\t\"policy\": \"bsd\",\r\n\t\"reassemble_async\": true,\r\n\t\"require_3whs\": -1,\r\n\t\"show_rebuilt_packets\": false,\r\n\t\"session_timeout\": 30,\r\n\t\"track_only\": false\r\n}"
-    normalizer:
-      enabled: true
-      data: "{\r\n\t\"ip4\": {},\r\n\t\"tcp\": {\r\n\t\t\"base\": false,\r\n\t\t\"block\": false,\r\n\t\t\"urp\": false,\r\n\t\t\"ips\": true,\r\n\t\t\"pad\": false,\r\n\t\t\"trim_syn\": false,\r\n\t\t\"trim_rst\": false,\r\n\t\t\"trim_win\": false,\r\n\t\t\"trim_mss\": false,\r\n\t\t\"opts\": false,\r\n\t\t\"req_urg\": false,\r\n\t\t\"req_pay\": false,\r\n\t\t\"rsv\": false,\r\n\t\t\"req_urp\": false,\r\n\t\t\"ecn\": \"off | packet | stream\",\r\n\t\t\"allow_names\": \"sack | echo | partial_order | conn_count | alt_checksum | md5\"\r\n\t}\r\n}"
----
 # A File Policy is a set of configurations that the system uses to perform 
 # Malware Protection and File Control.
 
@@ -372,23 +309,6 @@ spec:
       intrusionPolicy: my-ips-policy2
       logAction: LogFlowBoth
       variableSet: my-var-set2
-  trafficPreprocessorRules:
-    - attributes:
-        Name: "Tfrule1"
-      id:
-        id: "123"
-      binders:
-        - sourceNetworks:
-          - ip: 10.20.30.0
-            netmask: 24
-          - ip: 5.6.0.0
-            netmask: 16
-          destinationNetworks:
-          - ip: 10.20.31.0
-            netmask: 24
-          - ip: 5.7.0.0
-            netmask: 16
-      networkAnalysisPolicy: my-nap-policy2
   defaultLoggingDest: my-logging-dest
   # IntrusionEventLogging and fileEventLogging provide a toggle to send events to a 
   # logging destination and also allows to override the default logging destination.
@@ -415,7 +335,6 @@ spec:
             - ip: "1.1.1.2"
               netmask: 24
   defaultVariableSet: "my-var-set"
-  defaultNetworkAnalysisPolicy: "my-nap-policy"
 ---
 # EventConfiguration configures SSE as a destination for eventing.
 # SendEventsSSE in ConsumerConfiguration provides the ability to send events to SSE
