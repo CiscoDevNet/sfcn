@@ -1,0 +1,41 @@
+######
+# IMP: write in reverse order of dependencies to see expected behaviour(to avoid missing CRD errors) i.e. independent CRDs should come first
+# example: ThreatConfig CRD should come after ThreatPolicy and EventConfiguration CRDs as it is dependent on them
+######
+
+# Bare minimum CRDs to deploy a CNTD configuration
+
+apiVersion: cntd.cisco.com/v1
+kind: IntrusionPolicy
+metadata:
+  name: my-ips-policy
+  namespace: sfcn-system
+spec:
+  type: connectivity-ips
+  mode: Inline
+  treatBlockAsReject: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: EventConfiguration
+metadata:
+  name: my-event-config
+  namespace: sfcn-system
+spec:
+  consumerConfiguration:
+    sendEventsSSE: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatPolicy
+metadata:
+  name: my-threat-policy
+  namespace: sfcn-system
+spec:
+  defaultIntrusionPolicy: my-ips-policy
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatConfig
+metadata:
+  name: my-config
+  namespace: sfcn-system
+spec:
+  threatPolicy: my-threat-policy

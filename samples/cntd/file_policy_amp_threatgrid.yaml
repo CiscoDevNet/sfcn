@@ -1,0 +1,269 @@
+######
+# IMP: write in reverse order of dependencies to see expected behaviour(to avoid missing CRD errors) i.e. independent CRDs should come first
+# example: ThreatConfig CRD should come after ThreatPolicy and EventConfiguration CRDs as it is dependent on them
+######
+
+# CRDs to deploy File Policy, AMP and ThreatGrid
+
+# A File Policy is a set of configurations that the system uses to perform 
+# Malware Protection and File Control. This ensures that before the system 
+# passes a file in traffic that matches a Threat Policy rule’s conditions, 
+# it first inspects the file. 
+
+# The Advanced Malware Protection cloud or AMP is a Cisco-hosted server 
+# that uses big data analytics and continuous analysis to provide 
+# intelligence that the system uses to detect and block malware on 
+# your network. The AMP cloud provides dispositions for possible malware 
+# detected in network traffic by managed devices, as well as data updates 
+# for local malware analysis and file pre-classification.
+
+apiVersion: cntd.cisco.com/v1
+kind: IntrusionPolicy
+metadata:
+  name: my-ips-policy
+  namespace: sfcn-system
+spec:
+  type: balanced-ips
+  mode: Inline
+  addedRules:
+    - gid: 1
+      sid: 1234
+      action: "Block"
+  disabledRules:
+    - gid: 1
+      sid: 1235
+  addedRuleGroups:
+    f58ecfed-c8ec-5ffe-bf68-d33324e22289:
+      securityLevel: 2
+  excludedRuleGroups:
+    - d7011cb1-b435-593d-86b1-1b9ac2481fb1
+  treatBlockAsReject: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: FilePolicy
+metadata:
+  name: my-file-policy
+  namespace: sfcn-system
+spec:
+  firstTimeAnalysis: true
+  threatScore: 60
+  maxArchiveDepth: 2
+  fileRules:
+    - id:
+        id: "test-sandbox-rule"
+      fileTypes:
+        - id: 1
+        - id: 9
+        - id: 11
+        - id: 15
+        - id: 248
+      applicationProtocol: ANY
+      malwareAnalysisOptions: [DYNAMIC_ANALYSIS]
+      directionOfTransfer: BOTH
+      ruleAction: MALWARE_BLOCK
+      reset: true
+    - id:
+        id: "test-malware-rule"
+      fileTypes:
+        - id: 12
+        - id: 13
+        - id: 14
+        - id: 16
+        - id: 17
+        - id: 18
+        - id: 19
+        - id: 20
+        - id: 21
+        - id: 22
+        - id: 29
+        - id: 31
+        - id: 32
+        - id: 33
+        - id: 34
+        - id: 36
+        - id: 37
+        - id: 38
+        - id: 39
+        - id: 40
+        - id: 41
+        - id: 43
+        - id: 44
+        - id: 45
+        - id: 46
+        - id: 47
+        - id: 200
+        - id: 201
+        - id: 202
+        - id: 203
+        - id: 204
+        - id: 205
+        - id: 206
+        - id: 207
+        - id: 208
+        - id: 209
+        - id: 210
+        - id: 211
+        - id: 212
+        - id: 214
+        - id: 215
+        - id: 216
+        - id: 217
+        - id: 218
+        - id: 219
+        - id: 220
+        - id: 221
+        - id: 222
+        - id: 223
+        - id: 224
+        - id: 225
+        - id: 226
+        - id: 227
+        - id: 228
+        - id: 229
+        - id: 230
+        - id: 231
+        - id: 232
+        - id: 233
+        - id: 234
+        - id: 235
+        - id: 236
+        - id: 237
+        - id: 238
+        - id: 239
+        - id: 240
+        - id: 241
+        - id: 242
+        - id: 243
+        - id: 244
+        - id: 245
+        - id: 246
+        - id: 247
+        - id: 249
+        - id: 250
+        - id: 251
+        - id: 252
+        - id: 253
+        - id: 254
+        - id: 255
+        - id: 256
+        - id: 257
+        - id: 258
+        - id: 259
+        - id: 260
+        - id: 261
+        - id: 262
+        - id: 263
+        - id: 264
+        - id: 265
+        - id: 266
+        - id: 267
+        - id: 268
+        - id: 269
+        - id: 270
+        - id: 271
+        - id: 272
+        - id: 273
+        - id: 274
+        - id: 275
+        - id: 276
+        - id: 277
+        - id: 278
+        - id: 280
+        - id: 281
+        - id: 282
+        - id: 283
+        - id: 284
+      applicationProtocol: ANY
+      directionOfTransfer: BOTH
+      ruleAction: MALWARE_BLOCK
+---
+apiVersion: cntd.cisco.com/v1
+kind: LoggingDestination
+metadata:
+  name: my-logging-dest
+  namespace: sfcn-system
+spec:
+  syslog:
+    syslogServer:
+      hostname: 172.16.235.104
+      port: 514
+    severity: EmergLog
+    facility: 10
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatPolicy
+metadata:
+  name: my-threat-policy
+  namespace: sfcn-system
+spec:
+  rules:
+    - attributes:
+        Name: "networkrule_file"
+      action: Inspect
+      id:
+        id : "2212"
+      logAction: LogFlowBoth
+      filePolicy: my-file-policy
+  defaultLoggingDest: my-logging-dest
+  fileEventLogging:
+    sendEvents: true
+  defaultIntrusionPolicy: my-ips-policy
+---
+apiVersion: cntd.cisco.com/v1
+kind: EventConfiguration
+metadata:
+  name: my-event-config
+  namespace: sfcn-system
+spec:
+  consumerConfiguration:
+    sendEventsSSE: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: AMPConfiguration
+metadata:
+  name: sfcn-system-amp
+  namespace: sfcn-system
+spec:
+  cloudName: 'US Cloud'
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatGrid
+metadata:
+  name: sfcn-threat-grid
+  namespace: sfcn-system
+spec:
+  sandboxServer:
+    sandboxType: PUBLIC_CLOUD
+    publicCloudSetting:
+      name: US_CLOUD_SANDBOX
+      hostName: https://fmc.api.threatgrid.com
+  hostBrowser: panacea.threatgrid.com
+  name: Cisco Sandbox API, US Cloud
+  isRegistered: false
+  apiVersion: "3"
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatConfig
+metadata:
+  name: my-config
+  namespace: sfcn-system
+spec:
+  threatPolicy: my-threat-policy
+  eventConfiguration: my-event-config
+  ampConfiguration: sfcn-system-amp
+  threatGridConfiguration: sfcn-threat-grid
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatFeedSchedule
+metadata:
+  name: sfcn-system-feed-schedule
+  namespace: sfcn-system
+spec:
+  scheduleConfigs:
+    - jobType: 'LSPUpdate'
+      schedule:
+        dayOfWeek: '3'
+        month: '*'
+        dayOfMonth: '1'
+        hour: '01'
+        minute: '01'

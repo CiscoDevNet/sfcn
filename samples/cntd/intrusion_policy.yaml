@@ -1,0 +1,110 @@
+######
+# IMP: write in reverse order of dependencies to see expected behaviour(to avoid missing CRD errors) i.e. independent CRDs should come first
+# example: ThreatConfig CRD should come after ThreatPolicy and EventConfiguration CRDs as it is dependent on them
+######
+
+# IntrusionPolicy allows you to either use a pre-defined policy as is from Talos 
+# or create a custom intrusion policy overriding the pre-defined policy by 
+# enabling/disabling rules or rule groups.
+
+apiVersion: cntd.cisco.com/v1
+kind: IntrusionPolicy
+metadata:
+  name: my-ips-policy
+  namespace: sfcn-system
+spec:
+  # Type corresponds to base policy name
+  type: connectivity-ips
+  mode: Inline
+  disabledRules:
+    - gid: 1
+      sid: 57912
+      action: "Block"
+    - gid: 1
+      sid: 37732
+      action: "Block"
+  treatBlockAsReject: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: IntrusionPolicy
+metadata:
+  name: my-ips-policy2
+  namespace: sfcn-system
+spec:
+  type: security-ips
+  mode: Inline
+  addedRules:
+    - gid: 1
+      sid: 57912
+      action: "Block"
+  treatBlockAsReject: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: EventConfiguration
+metadata:
+  name: my-event-config
+  namespace: sfcn-system
+spec:
+  consumerConfiguration:
+    sendEventsSSE: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatPolicy
+metadata:
+  name: my-threat-policy
+  namespace: sfcn-system
+spec:
+  rules:
+    - attributes:
+        Name: "networkrule_ips"
+      action: Inspect
+      binders:
+        - destinationPorts:
+            - port: 443
+              protocol: 6
+      id:
+        id : "2213"
+      intrusionPolicy: my-ips-policy2
+      logAction: LogFlowBoth
+  defaultIntrusionPolicy: my-ips-policy
+  intrusionRuleOptions:
+    - gid: 1
+      sid: 29456
+      alertOptions:
+        threshold:
+          type: "Both"
+          track: "By_dst"
+          count: 20
+          seconds: 60
+        suppression:
+          sourceNetworks:
+            - ip: "1.1.1.1"
+              netmask: 32
+          destinationNetworks:
+            - ip: "1.1.1.2"
+              netmask: 24
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatConfig
+metadata:
+  name: my-config
+  namespace: sfcn-system
+spec:
+  threatPolicy: my-threat-policy
+  eventConfiguration: my-event-config
+---
+apiVersion: cntd.cisco.com/v1
+# ThreatFeedSchedule contains a list of Feed Schedule Configurations
+kind: ThreatFeedSchedule
+metadata:
+  name: sfcn-system-feed-schedule
+  namespace: sfcn-system
+spec:
+  scheduleConfigs:
+    - jobType: 'LSPUpdate'
+      schedule:
+        dayOfWeek: '3'
+        month: '*'
+        dayOfMonth: '1'
+        hour: '01'
+        minute: '01'
