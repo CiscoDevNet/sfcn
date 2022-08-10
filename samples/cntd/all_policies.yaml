@@ -1,0 +1,561 @@
+######
+# IMP: write in reverse order of dependencies to see expected behaviour(to avoid missing CRD errors) i.e. independent CRDs should come first
+# example: ThreatConfig CRD should come after ThreatPolicy and EventConfiguration CRDs as it is dependent on them
+######
+
+# STS deployment with all the CRDs defined
+
+
+# IntrusionPolicy allows you to either use a pre-defined policy as is from Talos 
+# or create a custom intrusion policy overriding the pre-defined policy by 
+# enabling/disabling rules or rule groups.
+
+apiVersion: cntd.cisco.com/v1
+kind: IntrusionPolicy
+metadata:
+  name: my-ips-policy
+  namespace: sfcn-system
+spec:
+  type: balanced-ips
+  mode: Inline
+  addedRules:
+    - gid: 1
+      sid: 1234
+      action: "Block"
+  disabledRules:
+    - gid: 1
+      sid: 1235
+  addedRuleGroups:
+    f58ecfed-c8ec-5ffe-bf68-d33324e22289:
+      securityLevel: 2
+  excludedRuleGroups:
+    - d7011cb1-b435-593d-86b1-1b9ac2481fb1
+  treatBlockAsReject: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: IntrusionPolicy
+metadata:
+  name: my-ips-policy2
+  namespace: sfcn-system
+spec:
+  type: balanced-ips
+  mode: InlineTest
+  addedRules:
+    - gid: 1
+      sid: 16316
+      action: "Block"
+  disabledRules:
+    - gid: 1
+      sid: 1235
+  addedRuleGroups:
+    f58ecfed-c8ec-5ffe-bf68-d33324e22289:
+      securityLevel: 1
+  excludedRuleGroups:
+    - d7011cb1-b435-593d-86b1-1b9ac2481fb1
+  treatBlockAsReject: false
+---
+# Variables represent values commonly used in intrusion rules to 
+# identify source and destination IP addresses and ports.
+
+apiVersion: cntd.cisco.com/v1
+kind: VariableSet
+metadata:
+  name: my-var-set
+  namespace: sfcn-system
+spec:
+  customVariables:
+    HTTP_PORTS: "80 8080"
+    FTP_PORTS: "500 21"
+  nets:
+    DNS_SERVERS: "192.168.0.0/16"
+    EXTERNAL_NET: "!10.30.40.50,10.30.40.0/24"
+    HOME_NET: "192.168.0.0/16"
+    HTTP_SERVERS: "192.168.0.0/16"
+    SIP_SERVERS: "192.168.0.0/16"
+    SMTP_SERVERS: "192.168.0.0/16"
+    SNMP_SERVERS: "192.168.0.0/16"
+    SQL_SERVERS: "192.168.0.0/16"
+    SSH_SERVERS: "192.168.0.0/16"
+    TELNET_SERVERS: "192.168.0.0/16"
+  ports:
+    FILE_DATA_PORTS: "10000,10080,10100,10250,10255,10297,10443,110,11371,1158,1194,1212,1220,12601,1270,13014,1414,1422,143,14592,1533,15489,15672,1581,16000,16992,16993,16994,16995,17000,1719,1720,1741,1801,18081,1812,1830,1942,19980,2231,2301,23472,2375,2381,2484,2578,2809,2869,2980,29991,3000,30007,30018,3029,3037,3057,30888,311,3128,33300,34412,3443,34443,34444,3507,36,36099,3702,383,4000,40007,41080,4343,443,44449,4592,4848,49152,49153,5000,50000,50002,50452,5054,5060,5061,5117,51423,5222,5250,53331,5416,5443,54444,5450,5480,55252,555,5555,55555,5600,5601,56712,5814,5894,591,593,5984,5985,5986,6080,6173,623,631,664,666,6767,6988,7000,7001,7005,7070,7071,7080,7144,7145,7180,7181,7510,7770,7777,7778,7779,80,8000,8001,8008,801,8014,8015,8020,8028,8040,8060,808,8080,8081,8082,8085,8088,8090,8095,81,8118,8123,8161,818,8180,8181,8182,82,8222,8243,8280,83,8300,8333,8344,8393,84,8400,8443,8484,85,8500,8509,86,8694,87,8787,88,8800,8852,8880,8888,8899,89,8983,90,9000,9001,9002,901,9050,9060,9080,9090,9091,9111,9200,9201,9290,9443,9447,9700,9710,972,9788,9830,9850,9999"
+    FTP_PORTS: "21,2100,3535"
+    GTP_PORTS: "2123,2152,3386"
+    HTTP_PORTS: "10000,10080,10100,10250,10255,10297,10443,11371,1158,1194,1212,1220,12601,1270,13014,1414,1422,14592,1533,15489,15672,1581,16000,16992,16993,16994,16995,17000,1719,1720,1741,1801,18081,1812,1830,1942,19980,2231,2301,23472,2375,2381,2484,2578,2809,2869,2980,29991,3000,30007,30018,3029,3037,3057,30888,311,3128,33300,34412,3443,34443,34444,3507,36,36099,3702,383,4000,40007,41080,4343,443,44449,4592,4848,49152,49153,5000,50000,50002,50452,5054,5060,5061,5117,51423,5222,5250,53331,5416,5443,54444,5450,5480,55252,555,5555,55555,5600,5601,56712,5814,5894,591,593,5984,5985,5986,6080,6173,623,631,664,666,6767,6988,7000,7001,7005,7070,7071,7080,7144,7145,7180,7181,7510,7770,7777,7778,7779,80,8000,8001,8008,801,8014,8015,8020,8028,8040,8060,808,8080,8081,8082,8085,8088,8090,8095,81,8118,8123,8161,818,8180,8181,8182,82,8222,8243,8280,83,8300,8333,8344,8393,84,8400,8443,8484,85,8500,8509,86,8694,87,8787,88,8800,8852,8880,8888,8899,89,8983,90,9000,9001,9002,901,9050,9060,9080,9090,9091,9111,9200,9201,9290,9443,9447,9700,9710,972,9788,9830,9850,9999"
+    ORACLE_PORTS: "any"
+    SHELLCODE_PORTS: "!80"
+    SIP_PORTS: "5060,5061,5600"
+    SSH_PORTS: "22"
+---
+apiVersion: cntd.cisco.com/v1
+kind: VariableSet
+metadata:
+  name: my-var-set2
+  namespace: sfcn-system
+spec:
+  customVariables:
+    HTTP_PORTS: "80 8081"
+    FTP_PORTS: "500 21"
+  nets:
+    SMTP_SERVERS: "192.168.0.0/16"
+    SNMP_SERVERS: "192.168.0.0/16"
+    SQL_SERVERS: "192.168.0.0/16"
+    SSH_SERVERS: "192.168.0.0/16"
+    TELNET_SERVERS: "192.168.0.0/16"
+  ports:
+    SHELLCODE_PORTS: "!80"
+    SIP_PORTS: "5060,5061,5600"
+    SSH_PORTS: "22"
+    HTTP_PORTS: "10000,10080,10100,10250,10255,10297,10443,11371,1158,1194,1212,1220,12601,1270,13014,1414,1422,14592,1533,15489,15672,1581,16000,16992,16993,16994,16995,17000,1719,1720,1741,1801,18081,1812,1830,1942,19980,2231,2301,23472,2375,2381,2484,2578,2809,2869,2980,29991,3000,30007,30018,3029,3037,3057,30888,311,3128,33300,34412,3443,34443,34444,3507,36,36099,3702,383,4000,40007,41080,4343,443,44449,4592,4848,49152,49153,5000,50000,50002,50452,5054,5060,5061,5117,51423,5222,5250,53331,5416,5443,54444,5450,5480,55252,555,5555,55555,5600,5601,56712,5814,5894,591,593,5984,5985,5986,6080,6173,623,631,664,666,6767,6988,7000,7001,7005,7070,7071,7080,7144,7145,7180,7181,7510,7770,7777,7778,7779,80,8000,8001,8008,801,8014,8015,8020,8028,8040,8060,808,8080,8081,8082,8085,8088,8090,8095,81,8118,8123,8161,818,8180,8181,8182,82,8222,8243,8280,83,8300,8333,8344,8393,84,8400,8443,8484,85,8500,8509,86,8694,87,8787,88,8800,8852,8880,8888,8899,89,8983,90,9000,9001,9002,901,9050,9060,9080,9090,9091,9111,9200,9201,9290,9443,9447,9700,9710,972,9788,9830,9850,9999"
+    FTP_PORTS: "21,2100,3535"
+---
+# A File Policy is a set of configurations that the system uses to perform 
+# File and Malware Protection.
+
+# Please refer to Appendix for the mapping of fileTypes IDs to file type categories.
+# [https://github.com/CiscoDevNet/sfcn/tree/main/samples/cntd/Appendix.md]
+
+apiVersion: cntd.cisco.com/v1
+kind: FilePolicy
+metadata:
+  name: my-file-policy
+  namespace: sfcn-system
+spec:
+  firstTimeAnalysis: true
+  threatScore: 60
+  maxArchiveDepth: 2
+  fileRules:
+    - id:
+        id: "test-sandbox-rule"
+      fileTypes:
+        - id: 1
+        - id: 9
+        - id: 11
+        - id: 15
+        - id: 248
+      applicationProtocol: ANY
+      malwareAnalysisOptions: [DYNAMIC_ANALYSIS]
+      directionOfTransfer: BOTH
+      ruleAction: MALWARE_BLOCK
+      reset: true
+    - id:
+        id: "test-malware-rule"
+      fileTypes:
+        - id: 12
+        - id: 13
+        - id: 14
+        - id: 16
+        - id: 17
+        - id: 18
+        - id: 19
+        - id: 20
+        - id: 21
+        - id: 22
+        - id: 29
+        - id: 31
+        - id: 32
+        - id: 33
+        - id: 34
+        - id: 36
+        - id: 37
+        - id: 38
+        - id: 39
+        - id: 40
+        - id: 41
+        - id: 43
+        - id: 44
+        - id: 45
+        - id: 46
+        - id: 47
+        - id: 200
+        - id: 201
+        - id: 202
+        - id: 203
+        - id: 204
+        - id: 205
+        - id: 206
+        - id: 207
+        - id: 208
+        - id: 209
+        - id: 210
+        - id: 211
+        - id: 212
+        - id: 214
+        - id: 215
+        - id: 216
+        - id: 217
+        - id: 218
+        - id: 219
+        - id: 220
+        - id: 221
+        - id: 222
+        - id: 223
+        - id: 224
+        - id: 225
+        - id: 226
+        - id: 227
+        - id: 228
+        - id: 229
+        - id: 230
+        - id: 231
+        - id: 232
+        - id: 233
+        - id: 234
+        - id: 235
+        - id: 236
+        - id: 237
+        - id: 238
+        - id: 239
+        - id: 240
+        - id: 241
+        - id: 242
+        - id: 243
+        - id: 244
+        - id: 245
+        - id: 246
+        - id: 247
+        - id: 249
+        - id: 250
+        - id: 251
+        - id: 252
+        - id: 253
+        - id: 254
+        - id: 255
+        - id: 256
+        - id: 257
+        - id: 258
+        - id: 259
+        - id: 260
+        - id: 261
+        - id: 262
+        - id: 263
+        - id: 264
+        - id: 265
+        - id: 266
+        - id: 267
+        - id: 268
+        - id: 269
+        - id: 270
+        - id: 271
+        - id: 272
+        - id: 273
+        - id: 274
+        - id: 275
+        - id: 276
+        - id: 277
+        - id: 278
+        - id: 280
+        - id: 281
+        - id: 282
+        - id: 283
+        - id: 284
+      applicationProtocol: ANY
+      directionOfTransfer: BOTH
+      ruleAction: MALWARE_BLOCK
+---
+# Logging Destination describes the hostname and port of the syslog server,
+# along with the priority of the logs.
+
+apiVersion: cntd.cisco.com/v1
+kind: LoggingDestination
+metadata:
+  name: my-logging-dest
+  namespace: sfcn-system
+spec:
+  syslog:
+    syslogServer:
+      hostname: 172.16.235.104
+      port: 514
+    severity: EmergLog
+    facility: 10
+---
+apiVersion: cntd.cisco.com/v1
+kind: LoggingDestination
+metadata:
+  name: my-ips-logging-dest
+  namespace: sfcn-system
+spec:
+  syslog:
+    syslogServer:
+      hostname: 172.16.235.104
+      port: 514
+    severity: AlertLog
+    facility: 10
+---
+# ThreatPolicy is used to generate bundles of snort configuration, 
+# policy metadata for event enrichment and syslog configuration.
+# It contains reference of policies like Intrusion Policy, File Policy, etc.
+
+apiVersion: cntd.cisco.com/v1
+kind: ThreatPolicy
+metadata:
+  name: my-threat-policy
+  namespace: sfcn-system
+spec:
+  rules:
+    - attributes:
+        Name: "networkrule_file"
+      action: Inspect
+      id:
+        id : "2212"
+      logAction: LogFlowBoth
+      filePolicy: my-file-policy
+    - attributes:
+        Name: "networkrule_ips"
+      action: Inspect
+      binders:
+        - destinationPorts:
+            - port: 443
+              protocol: 6
+      id:
+        id : "2213"
+      intrusionPolicy: my-ips-policy2
+      logAction: LogFlowBoth
+      variableSet: my-var-set2
+  defaultLoggingDest: my-logging-dest
+  # IntrusionEventLogging and fileEventLogging provide a toggle to send events to a 
+  # logging destination and also allows to override the default logging destination.
+  intrusionEventLogging:
+    sendEvents: true
+    loggingDestination: my-ips-logging-dest
+  fileEventLogging:
+    sendEvents: false
+  defaultIntrusionPolicy: my-ips-policy
+  intrusionRuleOptions:
+    - gid: 1
+      sid: 29456
+      alertOptions:
+        threshold:
+          type: "Both"
+          track: "By_dst"
+          count: 20
+          seconds: 60
+        suppression:
+          sourceNetworks:
+            - ip: "1.1.1.1"
+              netmask: 32
+          destinationNetworks:
+            - ip: "1.1.1.2"
+              netmask: 24
+  defaultVariableSet: "my-var-set"
+---
+# EventConfiguration configures SSE as a destination for eventing.
+# SendEventsSSE in ConsumerConfiguration provides the ability to send events to SSE
+
+apiVersion: cntd.cisco.com/v1
+kind: EventConfiguration
+metadata:
+  name: my-event-config
+  namespace: sfcn-system
+spec:
+  consumerConfiguration:
+    sendEventsSSE: false
+---
+# The AMP cloud provides dispositions for possible malware 
+# detected in network traffic by managed devices, as well as data updates 
+# for local malware analysis and file pre-classification.
+
+apiVersion: cntd.cisco.com/v1
+kind: AMPConfiguration
+metadata:
+  name: sfcn-system-amp
+  namespace: sfcn-system
+spec:
+  cloudName: 'US Cloud'
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatGrid
+metadata:
+  name: sfcn-threat-grid
+  namespace: sfcn-system
+spec:
+  sandboxServer:
+    sandboxType: PUBLIC_CLOUD
+    publicCloudSetting:
+      name: US_CLOUD_SANDBOX
+      hostName: https://fmc.api.threatgrid.com
+  hostBrowser: panacea.threatgrid.com
+  name: Cisco Sandbox API, US Cloud
+  isRegistered: false
+  apiVersion: "3"
+---
+# Security Intelligence is an early phase of access control, before the system 
+# performs more resource-intensive evaluation. 
+
+apiVersion: cntd.cisco.com/v1
+kind: SecurityIntelligencePolicy
+metadata:
+  name: my-si-policy
+  namespace: sfcn-system
+spec:
+  blockList:
+    # IPList
+    - feedId:
+        id: 02213098-6d94-4680-8ce8-2d0816389f56
+      feedType: NetworkFeed
+    - feedId:
+        id: 2b15cb6f-a3fc-4e0e-a342-ccc5e5803263
+      feedType: NetworkFeed
+    - feedId:
+        id: 5f8148f1-e5e4-427a-aa3b-ee1c2745c350
+      feedType: NetworkFeed
+    - feedId:
+        id: 937cf5e8-76d1-4ba2-a83c-475dc80c3845
+      feedType: NetworkFeed
+    - feedId:
+        id: bde824fd-36dd-4a7c-9cc1-80e40ac7aa35
+      feedType: NetworkFeed
+    - feedId:
+        id: 032ba433-c295-11e4-a919-d4ae5275a468
+      feedType: NetworkFeed
+    - feedId:
+        id: 2ccda18e-ddff-4f5c-af9a-f009852183f4
+      feedType: NetworkFeed
+    - feedId:
+        id: 60f4e2ab-d96c-44a0-bd38-830252b63f46
+      feedType: NetworkFeed
+    - feedId:
+        id: d3899830-d481-4773-b4e2-7daa7acf5e44
+      feedType: NetworkFeed
+    - feedId:
+        id: 03709ed4-faab-47af-bade-4435f8daee27
+      feedType: NetworkFeed
+    - feedId:
+        id: 30f9e69c-d64c-479c-821d-0e4edab8217a
+      feedType: NetworkFeed
+    - feedId:
+        id: 6ba968f4-7a25-4793-a2c8-7cc77f1ff437
+      feedType: NetworkFeed
+    - feedId:
+        id: a27c6aae-8e52-4174-a81a-47c59fecc092
+      feedType: NetworkFeed
+    - feedId:
+        id: d7d996a6-6b92-4a56-8f10-e8506e431ca5
+      feedType: NetworkFeed
+    - feedId:
+        id: 1b117672-7453-478c-be31-b72e89ca1acb
+      feedType: NetworkFeed
+    - feedId:
+        id: 3e2af68e-5fc8-4b1c-b5bc-b4e7cab598ba
+      feedType: NetworkFeed
+    - feedId:
+        id: 8af156ca-8020-4608-9278-01b87458ea46
+      feedType: NetworkFeed
+    - feedId:
+        id: abdc925f-4f85-4504-90a7-c891979ac517
+      feedType: NetworkFeed
+    - feedId:
+        id: 23f2a124-8278-4c03-8c9d-d28fe08b5e98
+      feedType: NetworkFeed
+    - feedId:
+        id: 5a0b6d6b-e2c3-436f-b4a1-48248b330a26
+      feedType: NetworkFeed
+    - feedId:
+        id: 8c3e31be-ca41-43c8-87cb-82a35b0f20e2
+      feedType: NetworkFeed
+    - feedId:
+        id: b1df3aa8-2841-4c88-8e64-bfaacec7fedd
+      feedType: NetworkFeed
+    # URL Lists
+    - feedId:
+        id: 02213098-6d94-4680-8ce8-2d081638d087
+      feedType: UrlFeed
+    - feedId:
+        id: 032ba433-c295-11e4-a919-d4ae5275d599
+      feedType: UrlFeed
+    - feedId:
+        id: 03709ed4-faab-47af-bade-4435f8da11f5
+      feedType: UrlFeed
+    - feedId:
+        id: 1b117672-7453-478c-be31-b72e89ca4bfc
+      feedType: UrlFeed
+    - feedId:
+        id: 23f2a124-8278-4c03-8c9d-d28fe08b8fc9
+      feedType: UrlFeed
+    - feedId:
+        id: 2b15cb6f-a3fc-4e0e-a342-ccc5e5806394
+      feedType: UrlFeed
+    - feedId:
+        id: 2ccda18e-ddff-4f5c-af9a-f0098521b525
+      feedType: UrlFeed
+    - feedId:
+        id: 30f9e69c-d64c-479c-821d-0e4edab852ab
+      feedType: UrlFeed
+    - feedId:
+        id: 3e2af68e-5fc8-4b1c-b5bc-b4e7cab5c9eb
+      feedType: UrlFeed
+    - feedId:
+        id: 5a0b6d6b-e2c3-436f-b4a1-48248b333b57
+      feedType: UrlFeed
+    - feedId:
+        id: 5f8148f1-e5e4-427a-aa3b-ee1c2745f481
+      feedType: UrlFeed
+    - feedId:
+        id: 60f4e2ab-d96c-44a0-bd38-830252b67077
+      feedType: UrlFeed
+    - feedId:
+        id: 6ba968f4-7a25-4793-a2c8-7cc77f1f1256
+      feedType: UrlFeed
+    - feedId:
+        id: 8af156ca-8020-4608-9278-01b8745811b7
+      feedType: UrlFeed
+    - feedId:
+        id: 8c3e31be-ca41-43c8-87cb-82a35b0f5213
+      feedType: UrlFeed
+    - feedId:
+        id: 937cf5e8-76d1-4ba2-a83c-475dc80c6976
+      feedType: UrlFeed
+    - feedId:
+        id: a27c6aae-8e52-4174-a81a-47c59fecf1c3
+      feedType: UrlFeed
+    - feedId:
+        id: abdc925f-4f85-4504-90a7-c891979af648
+      feedType: UrlFeed
+    - feedId:
+        id: b1df3aa8-2841-4c88-8e64-bfaacec71300
+      feedType: UrlFeed
+    - feedId:
+        id: bde824fd-36dd-4a7c-9cc1-80e40ac7db66
+      feedType: UrlFeed
+    - feedId:
+        id: d3899830-d481-4773-b4e2-7daa7acf8f75
+      feedType: UrlFeed
+    - feedId:
+        id: d7d996a6-6b92-4a56-8f10-e8506e434dd6
+      feedType: UrlFeed
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatConfig
+metadata:
+  name: my-config
+  namespace: sfcn-system
+spec:
+  threatPolicy: my-threat-policy
+  eventConfiguration: my-event-config
+  ampConfiguration: sfcn-system-amp
+  threatGridConfiguration: sfcn-threat-grid
+  securityIntelligencePolicy: my-si-policy
+---
+# ThreatFeedSchedule contains a list of Feed Schedule Configurations
+
+apiVersion: cntd.cisco.com/v1
+kind: ThreatFeedSchedule
+metadata:
+  name: sfcn-system-feed-schedule
+  namespace: sfcn-system
+spec:
+  scheduleConfigs:
+    - jobType: 'LSPUpdate'
+      schedule:
+        dayOfWeek: '3'
+        month: '*'
+        dayOfMonth: '1'
+        hour: '01'
+        minute: '01'
+    - jobType: 'SIFUpdate'
+      schedule:
+        dayOfWeek: '*'
+        month: '*'
+        dayOfMonth: '*'
+        hour: '00'
+        minute: '02'

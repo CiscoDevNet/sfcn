@@ -1,0 +1,122 @@
+######
+# IMP: write in reverse order of dependencies to see expected behaviour(to avoid missing CRD errors) i.e. independent CRDs should come first
+# example: ThreatConfig CRD should come after ThreatPolicy and EventConfiguration CRDs as it is dependent on them
+######
+
+# Security Intelligence is an early phase of access control, before the system 
+# performs more resource-intensive evaluation. The system blocks unwanted traffic 
+# based on IP and/or URL lists (DNS is not currently supported in STS) before 
+# evaluating it with the rules of ThreatPolicy, thus reducing the amount of system 
+# resources used.
+
+# Security Intelligence feeds obtained from TALOS are updated by default every hour. 
+# ThreatFeedSchedule has a provision to set custom schedule frequency for SIF Updates.
+
+apiVersion: cntd.cisco.com/v1
+kind: IntrusionPolicy
+metadata:
+  name: my-ips-policy
+  namespace: sfcn-system
+spec:
+  type: connectivity-ips
+  mode: Inline
+  treatBlockAsReject: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: LoggingDestination
+metadata:
+  name: my-logging-dest
+  namespace: sfcn-system
+spec:
+  syslog:
+    syslogServer:
+      hostname: 172.16.235.104
+      port: 514
+    severity: EmergLog
+    facility: 10
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatPolicy
+metadata:
+  name: my-threat-policy
+  namespace: sfcn-system
+spec:
+  rules:
+    - attributes:
+        Name: "networkrule_ips"
+      action: Inspect
+      id:
+        id : "2213"
+      intrusionPolicy: my-ips-policy
+      logAction: LogFlowBoth
+  defaultLoggingDest: my-logging-dest
+  defaultIntrusionPolicy: my-ips-policy
+---
+apiVersion: cntd.cisco.com/v1
+kind: EventConfiguration
+metadata:
+  name: my-event-config
+  namespace: sfcn-system
+spec:
+  consumerConfiguration:
+    sendEventsSSE: false
+---
+apiVersion: cntd.cisco.com/v1
+kind: SecurityIntelligencePolicy
+metadata:
+  name: my-si-policy
+  namespace: sfcn-system
+spec:
+  allowList:
+  # IPList
+    - feedId:
+        id: 02213098-6d94-4680-8ce8-2d0816389f56
+      feedType: NetworkFeed 
+  blockList:
+    # IPList
+    - feedId:
+        id: 2b15cb6f-a3fc-4e0e-a342-ccc5e5803263
+      feedType: NetworkFeed
+    - feedId:
+        id: 5f8148f1-e5e4-427a-aa3b-ee1c2745c350
+      feedType: NetworkFeed
+    # URL Lists
+    - feedId:
+        id: 02213098-6d94-4680-8ce8-2d081638d087
+      feedType: UrlFeed
+    - feedId:
+        id: 032ba433-c295-11e4-a919-d4ae5275d599
+      feedType: UrlFeed
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatConfig
+metadata:
+  name: my-config
+  namespace: sfcn-system
+spec:
+  threatPolicy: my-threat-policy
+  eventConfiguration: my-event-config
+  securityIntelligencePolicy: my-si-policy
+---
+apiVersion: cntd.cisco.com/v1
+kind: ThreatFeedSchedule
+metadata:
+  name: sfcn-system-feed-schedule
+  namespace: sfcn-system
+spec:
+  scheduleConfigs:
+    - jobType: 'LSPUpdate'
+      schedule:
+        dayOfWeek: '3'
+        month: '*'
+        dayOfMonth: '1'
+        hour: '01'
+        minute: '01'
+    - jobType: 'SIFUpdate'
+      schedule:
+        dayOfWeek: '*'
+        month: '*'
+        dayOfMonth: '*'
+        hour: '00'
+        minute: '02'
+
