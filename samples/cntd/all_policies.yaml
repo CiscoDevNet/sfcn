@@ -110,7 +110,10 @@ spec:
     FTP_PORTS: "21,2100,3535"
 ---
 # A File Policy is a set of configurations that the system uses to perform 
-# Malware Protection and File Control.
+# File and Malware Protection.
+
+# Please refer to Appendix for the mapping of fileTypes IDs to file type categories.
+# [https://github.com/CiscoDevNet/sfcn/tree/main/samples/cntd/Appendix.md]
 
 apiVersion: cntd.cisco.com/v1
 kind: FilePolicy
@@ -313,7 +316,7 @@ spec:
   # IntrusionEventLogging and fileEventLogging provide a toggle to send events to a 
   # logging destination and also allows to override the default logging destination.
   intrusionEventLogging:
-    sendEvents: false
+    sendEvents: true
     loggingDestination: my-ips-logging-dest
   fileEventLogging:
     sendEvents: false

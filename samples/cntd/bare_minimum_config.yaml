@@ -22,7 +22,7 @@ metadata:
   namespace: sfcn-system
 spec:
   consumerConfiguration:
-    sendEventsSSE: false
+    sendEventsSSE: true
 ---
 apiVersion: cntd.cisco.com/v1
 kind: ThreatPolicy

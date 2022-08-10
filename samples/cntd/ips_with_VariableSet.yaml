@@ -152,7 +152,7 @@ spec:
       variableSet: my-var-set2
   defaultLoggingDest: my-logging-dest
   intrusionEventLogging:
-    sendEvents: false
+    sendEvents: true
     loggingDestination: my-ips-logging-dest
   defaultIntrusionPolicy: my-ips-policy
   intrusionRuleOptions:

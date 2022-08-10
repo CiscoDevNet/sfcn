@@ -6,7 +6,7 @@
 # CRDs to deploy File Policy, AMP and ThreatGrid
 
 # A File Policy is a set of configurations that the system uses to perform 
-# Malware Protection and File Control. This ensures that before the system 
+# File and Malware Protection. This ensures that before the system 
 # passes a file in traffic that matches a Threat Policy rule’s conditions, 
 # it first inspects the file. 
 
@@ -16,6 +16,9 @@
 # your network. The AMP cloud provides dispositions for possible malware 
 # detected in network traffic by managed devices, as well as data updates 
 # for local malware analysis and file pre-classification.
+
+# Please refer to Appendix for the mapping of fileType IDs to file type categories.
+# [https://github.com/CiscoDevNet/sfcn/tree/main/samples/cntd/Appendix.md]
 
 apiVersion: cntd.cisco.com/v1
 kind: IntrusionPolicy
