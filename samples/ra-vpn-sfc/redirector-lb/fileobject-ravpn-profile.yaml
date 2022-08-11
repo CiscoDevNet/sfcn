@@ -1,0 +1,17 @@
+# This refers to an anyconnect profile XML file hosted in 
+# your S3 bucket. See ravpn-profile.xml as an example.
+apiVersion: cnfw.cisco.com/v1
+kind: FileObject
+metadata:
+  name: ravpnprofile
+  namespace: sfcn-system 
+spec:
+  fileName: ravpn-profile.xml
+  s3:
+   bucket: sfcn-s3-bucket
+   region: us-east-1
+   item: ravpn-profile.xml
+   auth:
+     secretName: s3-auth-secret
+     accessKeyField: access_key
+     secretKeyField: secret_key
