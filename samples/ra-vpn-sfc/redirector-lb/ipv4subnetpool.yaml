@@ -11,6 +11,8 @@ metadata:
     # AWS Route Table ID that will be synced with assigned subnets.
     # This should be the table that includes your inside networks, usually named "Inside Subnets"
     aws.cnfw.cisco.com/route-table-id: <your_route_table_id>
+    # The service role from which traffic will exit SFCN
+    sfcn.cisco.com/exit-service-role: "sfcexit"
   labels:
     sfcn.cisco.com/service-role: "cnfwentry"
 spec:
