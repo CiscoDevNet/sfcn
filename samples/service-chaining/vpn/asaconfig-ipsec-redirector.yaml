@@ -76,3 +76,4 @@ spec:
     crypto ikev2 enable outside client-services port 443
     crypto ikev2 remote-access trustpoint {{ .secrets.mypkcs.trustpoint }}
     crypto ikev2 redirect during-init
+

@@ -98,3 +98,4 @@ spec:
     quit
     crypto ca permit-weak-crypto
     ssl trust-point {{ .secrets.mypkcs.trustpoint }}
+

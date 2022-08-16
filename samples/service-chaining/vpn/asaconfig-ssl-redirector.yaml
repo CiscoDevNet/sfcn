@@ -71,3 +71,4 @@ spec:
     {{ .secrets.mypkcs.value }}
     quit
     ssl trust-point {{ .secrets.mypkcs.trustpoint }}
+

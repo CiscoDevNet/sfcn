@@ -7,7 +7,7 @@ metadata:
     # enables AWS Route Table integration for this pool
     aws.cnfw.cisco.com/type: "route-table"
     # EP's node interface index that will be used as route target
-    aws.cnfw.cisco.com/interface-index: "3"
+    aws.cnfw.cisco.com/interface-index: "1"
     # AWS Route Table ID that will be synced with assigned subnets.
     # This should be the table that includes your inside networks, usually named "Inside Subnets"
     aws.cnfw.cisco.com/route-table-id: "inside"
@@ -19,3 +19,4 @@ spec:
   address: "10.10.0.0"
   supernetPrefix: 16
   subnetPrefix: 24
+

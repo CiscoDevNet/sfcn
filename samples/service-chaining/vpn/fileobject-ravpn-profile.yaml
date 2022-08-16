@@ -15,3 +15,4 @@ spec:
      secretName: s3-auth-secret
      accessKeyField: access_key
      secretKeyField: secret_key
+
