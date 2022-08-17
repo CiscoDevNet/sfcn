@@ -30,7 +30,6 @@ spec:
     
     # create a route to the internet over the outside interface
     route outside 0 0 {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }}
-    # Add the following DNS configuration to have ASA contact R53 for DNS lookup
     dns domain-lookup outside
     dns server-group DefaultDNS
     name-server {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }}
@@ -39,7 +38,6 @@ spec:
       host {{ index .secrets "sfcn-redis" "host" }}
       port {{ index .secrets "sfcn-redis" "port" }}
       db-password {{ index .secrets "sfcn-redis" "token" }}
-      disable-ssl
       enable
     
     vpn load-balancing
@@ -51,7 +49,7 @@ spec:
       redirect-fqdn enable
     
     # The domain name that ra-vpn users will use to connect` 
-    domain-name vpn.dev1-kasa-dev.com
+    domain-name vpn.company.com
 
     webvpn
       enable outside

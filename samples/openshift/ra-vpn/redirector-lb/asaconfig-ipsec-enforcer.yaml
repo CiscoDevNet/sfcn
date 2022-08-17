@@ -76,7 +76,6 @@ spec:
       host {{ index .secrets "sfcn-redis" "host" }}
       port {{ index .secrets "sfcn-redis" "port" }}
       db-password {{ index .secrets "sfcn-redis" "token" }}
-      disable-ssl
       interface outside
       enable
  

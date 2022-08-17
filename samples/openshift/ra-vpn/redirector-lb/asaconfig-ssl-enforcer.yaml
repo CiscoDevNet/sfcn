@@ -71,9 +71,8 @@ spec:
     # Configure Redis server IP and enable external database.
     external-database
       host {{ index .secrets "sfcn-redis" "host" }}
-      port 31004
+      port {{ index .secrets "sfcn-redis" "port" }}
       db-password {{ index .secrets "sfcn-redis" "token" }}
-      disable-ssl
       enable
     
     # Any priority value other than 10 designates the ASAc
