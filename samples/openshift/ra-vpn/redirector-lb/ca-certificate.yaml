@@ -18,5 +18,5 @@ stringData:
   format: pkcs12
   value: |
     MIISTAIBAzCCEhIGCSqGSIb3DQEHAaCCEgMEghH/MIIR+zCCDIcGCSqGSIb3DQEH
-         < insert your certificat here>
+         < insert your certificate here>
     KOme9Y4X7XeBwuFexaKMG0xrBAhffPrliOjcugICCAA=          
