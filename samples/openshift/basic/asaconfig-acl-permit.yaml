@@ -1,0 +1,16 @@
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: acl-permit-traffic
+  labels:
+    sfcn.cisco.com/service-role: default
+spec:
+  order: 5
+  description: "Permit all IP-based traffic between interfaces"
+  cliLines: |
+    same-security-traffic permit inter-interface
+    same-security-traffic permit intra-interface
+
+    access-list passall extended permit ip any any
+    access-group passall in interface inside
+    access-group passall in interface outside
