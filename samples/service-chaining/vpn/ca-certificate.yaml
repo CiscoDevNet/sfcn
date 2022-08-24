@@ -1,0 +1,37 @@
+# This certificate is provided by you. It is a PKCS12 formatted cert
+# generated on the domains used in your Route53Ingress config. 
+# For VPN Redirector topology, this should be a wildcard cert which 
+# covers the parent and subdomains used for VPN. 
+# 
+# Example: if using "domain.com" as the parent domain, with 
+# "us.domain.com" and "eu.domain.com" as subdomains, your wildcard
+# should include "*.domain.com", "*.us.domain.com", and "*.eu.domain.com"
+# 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mypkcs
+  namespace: sfcn-system
+stringData:
+  trustpoint: ssltp
+  password: test
+  format: pkcs12
+  value: |
+    MIIS2gIBAzCCEqAGCSqGSIb3DQEHAaCCEpEEghKNMIISiTCCDQcGCSqGSIb3DQEH
+    BqCCDPgwggz0AgEAMIIM7QYJKoZIhvcNAQcBMBwGCiqGSIb3DQEMAQYwDgQIh63X
+    549tUD0CAggAgIIMwHVhJkKRWCORnqaj4ixxBJL80fmIH327kRtftzBY59Rjz93s
+    ZwNibpOx2/UadS+LYaB9G9+ZfK38fxyRkPIejME1BEQXhok3uhlijFqaoCpAY5xz
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    EZF8S6wcSGkeu7444GAVfcQjiPH54T5QEST07GlGlQjObO6K4CtC2E9YQPFOyGFs
+    <shortened for brevity>
+    MRpjKvfSuc8qmM5TPxnLJwQILJ/u4ij4txACAggA
+

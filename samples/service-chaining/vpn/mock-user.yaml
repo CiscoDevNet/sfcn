@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: userinfo 
+  namespace: sfcn-system
+stringData:
+  # RA VPN client details
+  username: jsmith 
+  password: Ljrg1492#
+  privilege: "15"
+

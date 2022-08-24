@@ -1,0 +1,22 @@
+apiVersion: cnfw.cisco.com/v1
+kind: IPv4SubnetPool
+metadata:
+  name: ravpnpool
+  namespace: sfcn-system 
+  annotations:
+    # enables AWS Route Table integration for this pool
+    aws.cnfw.cisco.com/type: "route-table"
+    # EP's node interface index that will be used as route target
+    aws.cnfw.cisco.com/interface-index: "1"
+    # AWS Route Table ID that will be synced with assigned subnets.
+    # This should be the table that includes your inside networks, usually named "Inside Subnets"
+    aws.cnfw.cisco.com/route-table-id: "inside"
+    # The service role from which traffic will exit SFCN
+    sfcn.cisco.com/exit-service-role: "sfcexit"
+  labels:
+    sfcn.cisco.com/service-role: "cnfwentry"
+spec:
+  address: "10.10.0.0"
+  supernetPrefix: 16
+  subnetPrefix: 24
+
