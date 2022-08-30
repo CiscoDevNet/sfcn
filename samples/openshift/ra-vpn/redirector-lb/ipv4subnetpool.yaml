@@ -1,0 +1,11 @@
+apiVersion: cnfw.cisco.com/v1
+kind: IPv4SubnetPool
+metadata:
+  name: ravpnpool
+  namespace: sfcn-system 
+  labels:
+    sfcn.cisco.com/service-role: "default"
+spec:
+  address: "10.10.0.0"
+  supernetPrefix: 16
+  subnetPrefix: 24

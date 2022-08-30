@@ -1,0 +1,32 @@
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: s2svpn-config
+  namespace: sfcn-system
+  labels:
+    sfcn.cisco.com/service-role: "default"
+spec:
+  order: 3
+  cliLines: |
+    # 10.37.32.0 as the inside IP address of ASAc in site1
+    # 10.38.32.0 as the inside IP address of ASAc in site2
+    # 3.219.43.20 as the outside IP address of ASAc in site2
+    crypto ikev2 policy 1
+    encryption aes-256
+    integrity sha256
+    group 15 14
+    prf sha256
+    lifetime seconds 28800
+    crypto ikev2 enable outside
+    crypto ipsec ikev2 ipsec-proposal AES256
+    protocol esp encryption aes-256
+    protocol esp integrity sha-256
+    crypto dynamic-map ravpn_l2l_map 10 set ikev2 ipsec-proposal AES256
+    crypto map outside_map 10 ipsec-isakmp dynamic ravpn_l2l_map
+    crypto map outside_map interface outside
+    # Change to your own group tunnel name
+    tunnel-group your-group-tunnel-name type ipsec-l2l
+    # Change to your own group tunnel name
+    tunnel-group your-group-tunnel-name ipsec-attributes
+    ikev2 remote-authentication pre-shared-key 12345
+    ikev2 local-authentication pre-shared-key 12345

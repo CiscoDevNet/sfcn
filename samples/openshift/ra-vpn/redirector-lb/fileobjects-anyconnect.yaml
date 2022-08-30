@@ -1,0 +1,47 @@
+apiVersion: cnfw.cisco.com/v1
+kind: FileObject
+metadata:
+  name: anyconnectlinux
+  namespace: sfcn-system 
+spec:
+  fileName: anyconnect-linux64-4.9.05042-webdeploy-k9.pkg
+  s3:
+   bucket: kasa-ravpn-fileobjects
+   region: us-east-1
+   item: anyconnect-linux64-4.9.05042-webdeploy-k9.pkg
+   auth:
+     secretName: s3-auth-secret
+     accessKeyField: accessKey
+     secretKeyField: secretKey
+---
+apiVersion: cnfw.cisco.com/v1
+kind: FileObject
+metadata:
+  name: anyconnectwin
+  namespace: sfcn-system 
+spec:
+  fileName: anyconnect-win-4.9.05042-webdeploy-k9.pkg
+  s3:
+   bucket: kasa-ravpn-fileobjects
+   region: us-east-1
+   item: anyconnect-win-4.9.05042-webdeploy-k9.pkg
+   auth:
+     secretName: s3-auth-secret
+     accessKeyField: accessKey
+     secretKeyField: secretKey
+---
+apiVersion: cnfw.cisco.com/v1
+kind: FileObject
+metadata:
+  name: anyconnectmac
+  namespace: sfcn-system 
+spec:
+  fileName: anyconnect-macos-4.9.05042-webdeploy-k9.pkg
+  s3:
+   bucket: kasa-ravpn-fileobjects
+   region: us-east-1
+   item: anyconnect-macos-4.9.05042-webdeploy-k9.pkg
+   auth:
+     secretName: s3-auth-secret
+     accessKeyField: accessKey
+     secretKeyField: secretKey

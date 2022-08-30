@@ -1,0 +1,68 @@
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: ravpn-redirector-config
+  namespace: sfcn-system
+  labels:
+    sfcn.cisco.com/service-role: "vpnredirector"
+spec:
+  order: 1
+  secrets:
+    - "mypkcs"
+    - "redisca"
+    - "sfcn-redis"
+  cliLines: |
+    interface GigabitEthernet0/0
+      nameif outside
+      security-level 0
+      ip address dhcp
+      no shutdown
+    interface GigabitEthernet0/1
+      nameif inside
+      security-level 100
+      ip address dhcp
+      no shutdown
+    interface Management0/0
+      management-only
+      nameif management
+      ip address dhcp
+      no shutdown
+    
+    # create a route to the internet over the outside interface
+    route outside 0 0 {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }}
+    dns domain-lookup outside
+    dns server-group DefaultDNS
+    name-server {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }}
+    
+    external-database
+      host {{ index .secrets "sfcn-redis" "host" }}
+      port {{ index .secrets "sfcn-redis" "port" }} 
+      db-password {{ index .secrets "sfcn-redis" "token" }}
+      enable
+    
+    vpn load-balancing
+      external-database
+      # A priority of 10 designates an ASAc as a redirector
+      priority 10
+      interface lbpublic outside
+      # Set the following to enable FQDN based redirects. Redirects will be IPs otherwise
+      redirect-fqdn enable
+    
+    # domain name that remote access users will use to connect
+    domain-name vpn.company.com
+
+    webvpn
+      enable outside
+    
+    # Configure the Redis CA certificate
+    crypto ca trustpoint {{ .secrets.redisca.trustpoint }}
+      enrollment terminal
+    crypto ca authenticate {{ .secrets.redisca.trustpoint }} nointeractive
+    {{ .secrets.redisca.value }}
+    quit
+    
+    # Import PKCS12 certificate for SSL connection
+    crypto ca import {{ .secrets.mypkcs.trustpoint }} pkcs12 {{ .secrets.mypkcs.password }} nointeractive
+    {{ .secrets.mypkcs.value }}
+    quit
+    ssl trust-point {{ .secrets.mypkcs.trustpoint }}

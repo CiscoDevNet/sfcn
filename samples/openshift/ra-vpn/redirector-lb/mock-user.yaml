@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: userinfo 
+  namespace: sfcn-system
+stringData:
+  # RA VPN client details
+  username: vpnuser
+  password: vpnuser2022
+  privilege: "15"
