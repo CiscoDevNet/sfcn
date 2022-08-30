@@ -1,0 +1,12 @@
+apiVersion: cnfw.cisco.com/v1
+kind: ASAConfiguration
+metadata:
+  name: routes-example
+  labels:
+    sfcn.cisco.com/service-role: default
+spec:
+  order: 2
+  description: "basic routing"
+  cliLines: |
+    route outside 0 0 {{ index .nodeLabels "sfcn.cisco.com.interface.2/gateway-ipv4" }} 1
+    route inside 10.37.0.0 255.255.0.0 {{ index .nodeLabels "sfcn.cisco.com.interface.3/gateway-ipv4" }} 2

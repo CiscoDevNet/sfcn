@@ -1,0 +1,13 @@
+# kubectl exec -it -n sfcn-system -c asac <enforcer-pod-name> -- bash -c "echo QUIT | openssl s_client -connect <redis-host-ip>:6379 -showcerts" 
+# The intermediate cert should be captured and applied into this secret value.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redisca
+  namespace: sfcn-system
+stringData:
+  trustpoint: redisca
+  value: |
+    MIIFvzCCA6egAwIBAgIUZwP66OA7qRVW/u9401Q6UucjkMcwDQYJKoZIhvcNAQEL
+        ... abbreviated cert ... replace with your cert
+    V7JGII4aiHQZXPw6N1V07Lpw2KIpwQzLaDDQ6dNUcmIeKTY=

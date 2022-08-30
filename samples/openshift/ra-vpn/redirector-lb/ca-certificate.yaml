@@ -1,0 +1,22 @@
+# This certificate is provided by you. It is a PKCS12 formatted cert
+# generated on the domains used in your Route53Ingress config. 
+# For VPN Redirector topology, this should be a wildcard cert which 
+# covers the parent and subdomains used for VPN. 
+# 
+# Example: if using "domain.com" as the parent domain, with 
+# "us.domain.com" and "eu.domain.com" as subdomains, your wildcard
+# should include "*.domain.com", "*.us.domain.com", and "*.eu.domain.com"
+# 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mypkcs
+  namespace: sfcn-system
+stringData:
+  trustpoint: ssltp
+  password: test
+  format: pkcs12
+  value: |
+    MIISTAIBAzCCEhIGCSqGSIb3DQEHAaCCEgMEghH/MIIR+zCCDIcGCSqGSIb3DQEH
+         < insert your certificat here>
+    KOme9Y4X7XeBwuFexaKMG0xrBAhffPrliOjcugICCAA=          
